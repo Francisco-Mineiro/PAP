@@ -13,6 +13,7 @@ import {
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { account } from '../../src/appwrite';
+import { colors, shadows, radius } from '../../src/theme';
 
 export default function Conta() {
   const router = useRouter();
@@ -66,7 +67,7 @@ const gotoprivacidade = () => {
     );
   };
 
-  const MenuOption = ({ icon, title, subtitle, onPress, color = "#000" }) => (
+  const MenuOption = ({ icon, title, subtitle, onPress, color = colors.ink }) => (
     <TouchableOpacity style={styles.menuItem} onPress={onPress} activeOpacity={0.7}>
       <View style={styles.menuIconContainer}>
         <Ionicons name={icon} size={22} color={color} />
@@ -75,7 +76,7 @@ const gotoprivacidade = () => {
         <Text style={[styles.menuTitle, { color }]}>{title}</Text>
         {subtitle && <Text style={styles.menuSubtitle}>{subtitle}</Text>}
       </View>
-      <Ionicons name="chevron-forward" size={18} color="#ccc" />
+      <Ionicons name="chevron-forward" size={18} color={colors.faint} />
     </TouchableOpacity>
   );
 
@@ -134,7 +135,7 @@ const gotoprivacidade = () => {
           <MenuOption 
             icon="log-out-outline" 
             title="Sair da Sessão" 
-            color="#ff4d4d"
+            color={colors.danger}
             onPress={handleLogout} 
           />
         </View>
@@ -214,7 +215,7 @@ const gotoprivacidade = () => {
               </View>
 
               <TouchableOpacity 
-                style={[styles.contactButton, { backgroundColor: '#ff6b6b' }]} 
+                style={[styles.contactButton, { backgroundColor: colors.danger }]} 
                 onPress={() => Alert.alert(
                   "Eliminar Dados", 
                   "Esta ação é irreversível. Queres continuar?",
@@ -243,7 +244,7 @@ const gotoprivacidade = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f2f4f8',
+    backgroundColor: colors.background,
   },
   listContent: {
     paddingHorizontal: 20,
@@ -253,31 +254,30 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#000',
+    color: colors.ink,
     marginBottom: 4,
   },
   date: {
     fontSize: 16,
-    color: '#777',
+    color: colors.muted,
     marginBottom: 25,
   },
   profileCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: colors.surface,
     padding: 20,
-    borderRadius: 20,
+    borderRadius: radius.lg,
     marginBottom: 30,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: colors.border,
+    ...shadows.card,
   },
   avatar: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#8e63ff',
+    backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 15,
@@ -293,29 +293,28 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#000',
+    color: colors.ink,
   },
   userEmail: {
     fontSize: 14,
-    color: '#777',
+    color: colors.muted,
     marginTop: 2,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#000',
+    color: colors.ink,
     marginBottom: 15,
     marginLeft: 5,
   },
   menuContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 20,
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
     paddingVertical: 5,
     marginBottom: 25,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: colors.border,
+    ...shadows.soft,
   },
   menuItem: {
     flexDirection: 'row',
@@ -336,27 +335,27 @@ const styles = StyleSheet.create({
   },
   menuSubtitle: {
     fontSize: 12,
-    color: '#888',
+    color: colors.muted,
     marginTop: 2,
   },
 
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: 'rgba(15,23,42,0.5)',
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: '#f2f4f8',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    backgroundColor: colors.background,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
     height: '75%',
     paddingTop: 20,
   }
   ,
   modalContent2: {
-    backgroundColor: '#f2f4f8',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    backgroundColor: colors.background,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
     height: '65%',
     paddingTop: 20,
   },
@@ -378,19 +377,18 @@ const styles = StyleSheet.create({
   helpSectionTitle: {
     fontSize: 17,
     fontWeight: 'bold',
-    color: '#333',
+    color: colors.ink,
     marginTop: 20,
     marginBottom: 12,
   },
   faqItem: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.surface,
     padding: 16,
-    borderRadius: 14,
+    borderRadius: radius.md,
     marginBottom: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.04,
-    shadowRadius: 5,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: colors.border,
+    ...shadows.soft,
   },
   faqQuestion: {
     fontWeight: '600',
@@ -398,16 +396,16 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   faqAnswer: {
-    color: '#666',
+    color: colors.muted,
     lineHeight: 20,
   },
   contactButton: {
-    backgroundColor: '#8e63ff',
+    backgroundColor: colors.primary,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 16,
-    borderRadius: 14,
+    borderRadius: radius.md,
     marginTop: 15,
     gap: 10,
   },

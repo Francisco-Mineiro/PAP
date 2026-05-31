@@ -11,11 +11,12 @@ import {
   TextInput 
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { colors, shadows, radius } from '../../src/theme';
 
 const despesas = [
-  { id: '1', title: 'Netflix', cat: 'Entretenimento', date: '04/01/2026', value: '-9.99€', color: '#8e63ff', icon: 'play' },
-  { id: '2', title: 'Gasolina', cat: 'Transportes', date: '03/01/2026', value: '-42.50€', color: '#3ad29f', icon: 'car' },
-  { id: '3', title: 'Continente', cat: 'Supermercado', date: '02/01/2026', value: '-78.32€', color: '#ff6b6b', icon: 'cart' },
+  { id: '1', title: 'Netflix', cat: 'Entretenimento', date: '04/01/2026', value: '-9.99€', color: colors.primary, icon: 'play' },
+  { id: '2', title: 'Gasolina', cat: 'Transportes', date: '03/01/2026', value: '-42.50€', color: colors.accent, icon: 'car' },
+  { id: '3', title: 'Continente', cat: 'Supermercado', date: '02/01/2026', value: '-78.32€', color: colors.danger, icon: 'cart' },
 ];
 
 export default function DespesasScreen() {
@@ -141,24 +142,24 @@ export default function DespesasScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f2f4f8' },
+  container: { flex: 1, backgroundColor: colors.background },
   listPadding: { paddingHorizontal: 20, paddingBottom: 100 },
   header: { marginTop: 10, marginBottom: 20 },
-  headerTitle: { fontSize: 28, fontWeight: '800', color: '#1a1a1a' },
-  headerSubtitle: { fontSize: 15, color: '#64748b' },
-  blackCard: { backgroundColor: '#1a1a1a', padding: 24, borderRadius: 28, marginBottom: 25 },
-  cardLabel: { color: '#94a3b8', fontSize: 14, fontWeight: '600' },
+  headerTitle: { fontSize: 28, fontWeight: '800', color: colors.ink },
+  headerSubtitle: { fontSize: 15, color: colors.muted },
+  blackCard: { backgroundColor: colors.ink, padding: 24, borderRadius: radius.lg, marginBottom: 25, ...shadows.card },
+  cardLabel: { color: colors.faint, fontSize: 14, fontWeight: '600' },
   cardValue: { color: '#fff', fontSize: 32, fontWeight: 'bold', marginVertical: 10 },
   cardFooter: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, borderTopWidth: 0.5, borderTopColor: '#334155', paddingTop: 15 },
-  footerLabel: { color: '#94a3b8', fontSize: 12 },
+  footerLabel: { color: colors.faint, fontSize: 12 },
   footerValue: { color: '#fff', fontSize: 16, fontWeight: 'bold', marginTop: 2 },
-  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#1a1a1a', marginBottom: 15 },
-  itemCard: { backgroundColor: '#fff', padding: 16, borderRadius: 20, marginBottom: 12, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: colors.ink, marginBottom: 15 },
+  itemCard: { backgroundColor: colors.surface, padding: 16, borderRadius: radius.md, marginBottom: 12, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderWidth: 1, borderColor: colors.border, ...shadows.soft },
   itemLeft: { flexDirection: 'row', alignItems: 'center' },
   iconCircle: { width: 48, height: 48, borderRadius: 24, justifyContent: 'center', alignItems: 'center', marginRight: 15 },
-  itemTitle: { fontSize: 16, fontWeight: 'bold', color: '#1e293b' },
-  itemSub: { fontSize: 12, color: '#94a3b8', marginTop: 2 },
-  itemValue: { fontSize: 16, fontWeight: '800', color: '#ff6b6b' },
+  itemTitle: { fontSize: 16, fontWeight: 'bold', color: colors.ink },
+  itemSub: { fontSize: 12, color: colors.faint, marginTop: 2 },
+  itemValue: { fontSize: 16, fontWeight: '800', color: colors.danger },
 
   // BOTÃO FLUTUANTE
   fab: {
@@ -168,11 +169,11 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#8e63ff',
+    backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 8,
-    shadowColor: '#8e63ff',
+    shadowColor: colors.primary,
     shadowOpacity: 0.4,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
@@ -181,13 +182,13 @@ const styles = StyleSheet.create({
   // ESTILOS DO MODAL
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(15,23,42,0.45)',
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
+    backgroundColor: colors.surface,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
     padding: 24,
     minHeight: '55%',
   },
@@ -200,7 +201,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#1a1a1a',
+    color: colors.ink,
   },
   inputGroup: {
     marginBottom: 20,
@@ -208,7 +209,7 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1a1a1a',
+    color: colors.ink,
     marginBottom: 8,
   },
   fakeInput: {
@@ -216,22 +217,22 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#f1f5f9',
-    borderRadius: 12,
+    borderColor: colors.border,
+    borderRadius: radius.sm,
     padding: 12,
-    backgroundColor: '#f8fafc',
+    backgroundColor: colors.background,
   },
   placeholderText: {
-    color: '#94a3b8',
+    color: colors.faint,
   },
   textInput: {
     borderWidth: 1,
-    borderColor: '#f1f5f9',
-    borderRadius: 12,
+    borderColor: colors.border,
+    borderRadius: radius.sm,
     padding: 12,
-    backgroundColor: '#f8fafc',
+    backgroundColor: colors.background,
     fontSize: 16,
-    color: '#1a1a1a',
+    color: colors.ink,
   },
   buttonRow: {
     flexDirection: 'row',
@@ -243,20 +244,20 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: 'center',
     marginRight: 10,
-    borderRadius: 12,
+    borderRadius: radius.sm,
     borderWidth: 1,
-    borderColor: '#f1f5f9',
+    borderColor: colors.border,
   },
   cancelButtonText: {
     fontWeight: 'bold',
-    color: '#1a1a1a',
+    color: colors.ink,
   },
   createButton: {
     flex: 2,
     padding: 16,
     alignItems: 'center',
-    borderRadius: 12,
-    backgroundColor: '#8e63ff',
+    borderRadius: radius.sm,
+    backgroundColor: colors.primary,
   },
   createButtonText: {
     fontWeight: 'bold',

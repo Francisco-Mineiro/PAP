@@ -4,7 +4,6 @@ import {
   View,
   Text,
   TextInput,
-  Button,
   Alert,
   StyleSheet,
   SafeAreaView,
@@ -13,6 +12,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; 
+import { colors, shadows, radius } from '../../src/theme';
 
 import { account, ID } from '../../src/appwrite';
 
@@ -83,11 +83,13 @@ export default function TestAppwrite() {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <SafeAreaView style={styles.container}>
         <View style={styles.content}>
-          <Text style={styles.title}>Registrar </Text>
+          <Text style={styles.eyebrow}>Começa hoje</Text>
+          <Text style={styles.title}>Criar conta</Text>
 
           <TextInput
             style={styles.input}
             placeholder="Nome"
+            placeholderTextColor={colors.faint}
             value={name}
             onChangeText={setName}
           />
@@ -95,6 +97,7 @@ export default function TestAppwrite() {
           <TextInput
             style={styles.input}
             placeholder="Email"
+            placeholderTextColor={colors.faint}
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -105,6 +108,7 @@ export default function TestAppwrite() {
             <TextInput
               style={styles.passwordInput}
               placeholder="Password"
+              placeholderTextColor={colors.faint}
               value={password}
               onChangeText={setPassword}
               secureTextEntry={!showPassword} 
@@ -117,14 +121,18 @@ export default function TestAppwrite() {
               <Ionicons
                 name={showPassword ? 'eye-off' : 'eye'}
                 size={24}
-                color="#666"
+                color={colors.muted}
               />
             </TouchableOpacity>
           </View>
 
-          <Button title="Registrar Nova Conta" onPress={register} />
+          <TouchableOpacity style={styles.primaryButton} onPress={register} activeOpacity={0.85}>
+            <Text style={styles.primaryButtonText}>Criar conta</Text>
+          </TouchableOpacity>
 
-          <Button title="Voltar" onPress={Voltar} color="#ff4444" />
+          <TouchableOpacity style={styles.secondaryButton} onPress={Voltar} activeOpacity={0.85}>
+            <Text style={styles.secondaryButtonText}>Voltar</Text>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
     </TouchableWithoutFeedback>
@@ -134,7 +142,7 @@ export default function TestAppwrite() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: colors.background,
   },
   content: {
     flex: 1,
@@ -143,29 +151,37 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 40,
-    color: '#333',
+    fontSize: 30,
+    fontWeight: '800',
+    marginBottom: 34,
+    color: colors.ink,
+  },
+  eyebrow: {
+    fontSize: 14,
+    fontWeight: '800',
+    marginBottom: 8,
+    color: colors.primary,
   },
   input: {
     width: '100%',
     padding: 12,
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
+    borderColor: colors.border,
+    borderRadius: radius.md,
     marginBottom: 20,
-    backgroundColor: '#fff',
+    backgroundColor: colors.surface,
+    ...shadows.soft,
   },
   passwordContainer: {
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    backgroundColor: '#fff',
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    backgroundColor: colors.surface,
     marginBottom: 20,
+    ...shadows.soft,
   },
   passwordInput: {
     flex: 1,
@@ -174,5 +190,36 @@ const styles = StyleSheet.create({
   },
   eyeIcon: {
     paddingHorizontal: 12,
+  },
+  primaryButton: {
+    width: '100%',
+    height: 54,
+    borderRadius: radius.md,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 4,
+    ...shadows.card,
+  },
+  primaryButtonText: {
+    color: colors.surface,
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  secondaryButton: {
+    width: '100%',
+    height: 52,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+  },
+  secondaryButtonText: {
+    color: colors.danger,
+    fontSize: 16,
+    fontWeight: '700',
   },
 });

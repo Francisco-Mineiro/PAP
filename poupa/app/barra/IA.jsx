@@ -12,6 +12,7 @@ import {
   ActivityIndicator 
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { colors, shadows, radius } from '../../src/theme';
 
 export default function AIChat() {
   const [messages, setMessages] = useState([
@@ -88,7 +89,7 @@ export default function AIChat() {
 
       {isLoading && (
         <View style={styles.loadingWrapper}>
-          <ActivityIndicator size="small" color="#8e63ff" />
+          <ActivityIndicator size="small" color={colors.primary} />
           <Text style={styles.loadingText}>A pensar...</Text>
         </View>
       )}
@@ -122,10 +123,17 @@ export default function AIChat() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f2f4f8' },
-  header: { paddingHorizontal: 20, paddingTop: 15, paddingBottom: 12 },
-  headerTitle: { fontSize: 26, fontWeight: '800', color: '#1a1a1a' },
-  headerSubtitle: { fontSize: 15, color: '#64748b' },
+  container: { flex: 1, backgroundColor: colors.background },
+  header: { 
+    paddingHorizontal: 20, 
+    paddingTop: 15, 
+    paddingBottom: 16,
+    backgroundColor: colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  headerTitle: { fontSize: 26, fontWeight: '800', color: colors.ink },
+  headerSubtitle: { fontSize: 15, color: colors.muted, marginTop: 2 },
   keyboardContainer: { flex: 0 },
   listContent: { 
     paddingHorizontal: 20, 
@@ -136,30 +144,37 @@ const styles = StyleSheet.create({
   messageWrapper: { marginVertical: 6, flexDirection: 'row' },
   userWrapper: { justifyContent: 'flex-end' },
   aiWrapper: { justifyContent: 'flex-start' },
-  bubble: { maxWidth: '85%', paddingVertical: 13, paddingHorizontal: 18, borderRadius: 22 },
-  userBubble: { backgroundColor: '#8e63ff', borderBottomRightRadius: 4 },
-  aiBubble: { backgroundColor: '#fff', borderBottomLeftRadius: 4, shadowColor: '#000', shadowOpacity: 0.05, elevation: 2 },
+  bubble: { maxWidth: '85%', paddingVertical: 13, paddingHorizontal: 18, borderRadius: radius.lg },
+  userBubble: { backgroundColor: colors.primary, borderBottomRightRadius: 6 },
+  aiBubble: { 
+    backgroundColor: colors.surface, 
+    borderBottomLeftRadius: 6,
+    borderWidth: 1,
+    borderColor: colors.border,
+    ...shadows.soft,
+  },
   messageText: { fontSize: 16, lineHeight: 23 },
   userText: { color: '#fff' },
-  aiText: { color: '#1e293b' },
+  aiText: { color: colors.ink },
 
   loadingWrapper: { flexDirection: 'row', justifyContent: 'center', padding: 12 },
-  loadingText: { marginLeft: 8, color: '#64748b' },
+  loadingText: { marginLeft: 8, color: colors.muted },
 
   inputArea: { 
     paddingHorizontal: 16, 
     paddingBottom: 12, 
     paddingTop: 8,
-    backgroundColor: '#f2f4f8',
+    backgroundColor: colors.background,
   },
   inputContainer: { 
     flexDirection: 'row', 
     alignItems: 'center', 
-    backgroundColor: '#fff', 
+    backgroundColor: colors.surface, 
     borderRadius: 30, 
     paddingHorizontal: 10, 
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: colors.border,
+    ...shadows.soft,
   },
   input: { 
     flex: 1, 
@@ -169,12 +184,12 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   sendButton: { 
-    backgroundColor: '#1a1a1a', 
+    backgroundColor: colors.primary, 
     width: 44, 
     height: 44, 
     borderRadius: 22, 
     justifyContent: 'center', 
     alignItems: 'center' 
   },
-  sendDisabled: { backgroundColor: '#cbd5e1' },
+  sendDisabled: { backgroundColor: colors.faint },
 }); 

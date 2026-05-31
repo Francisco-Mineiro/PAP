@@ -10,11 +10,12 @@ import {
   TextInput 
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { colors, shadows, radius } from '../../src/theme';
 
 const orçamentos = [
-  { id: '1', title: 'Casa', gast: 420, total: 650, icon: 'home-outline', color: '#8e63ff' },
-  { id: '2', title: 'Transportes', gast: 180, total: 300, icon: 'car-outline', color: '#3ad29f' },
-  { id: '3', title: 'Lazer', gast: 95, total: 150, icon: 'heart-outline', color: '#ff6b6b' },
+  { id: '1', title: 'Casa', gast: 420, total: 650, icon: 'home-outline', color: colors.primary },
+  { id: '2', title: 'Transportes', gast: 180, total: 300, icon: 'car-outline', color: colors.accent },
+  { id: '3', title: 'Lazer', gast: 95, total: 150, icon: 'heart-outline', color: colors.danger },
 ];
 
 export default function OrcamentoScreen() {
@@ -44,7 +45,7 @@ export default function OrcamentoScreen() {
         </View>
 
         <View style={styles.infoRow}>
-          <Ionicons name="information-circle-outline" size={16} color="#8e63ff" />
+          <Ionicons name="information-circle-outline" size={16} color={colors.primary} />
           <Text style={styles.infoText}>Restam 570€ para gastar este mês.</Text>
         </View>
       </View>
@@ -64,7 +65,7 @@ export default function OrcamentoScreen() {
             </View>
             <Text style={styles.catTitle}>{item.title}</Text>
           </View>
-          <Text style={styles.catValues}>{item.gast}€ / <Text style={{color: '#94a3b8'}}>{item.total}€</Text></Text>
+          <Text style={styles.catValues}>{item.gast}€ / <Text style={{color: colors.faint}}>{item.total}€</Text></Text>
         </View>
         <View style={styles.catProgressBg}>
           <View style={[styles.catProgressFill, { width: `${percent}%`, backgroundColor: item.color }]} />
@@ -156,30 +157,30 @@ export default function OrcamentoScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f2f4f8' },
+  container: { flex: 1, backgroundColor: colors.background },
   listPadding: { paddingHorizontal: 20, paddingBottom: 100 }, // Aumentado para o FAB não tapar o último item
   header: { marginTop: 10, marginBottom: 20 },
-  headerTitle: { fontSize: 28, fontWeight: '800', color: '#1a1a1a' },
-  headerSubtitle: { fontSize: 15, color: '#64748b' },
-  mainCard: { backgroundColor: '#fff', padding: 20, borderRadius: 24, marginBottom: 25, elevation: 2, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 10 },
+  headerTitle: { fontSize: 28, fontWeight: '800', color: colors.ink },
+  headerSubtitle: { fontSize: 15, color: colors.muted },
+  mainCard: { backgroundColor: colors.surface, padding: 20, borderRadius: radius.lg, marginBottom: 25, borderWidth: 1, borderColor: colors.border, ...shadows.card },
   mainCardTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 15 },
-  mainLabel: { fontSize: 14, color: '#64748b', fontWeight: '600' },
-  mainValue: { fontSize: 24, fontWeight: 'bold', color: '#1e293b', marginTop: 4 },
-  slash: { fontSize: 16, color: '#cbd5e1' },
-  percentageBadge: { backgroundColor: '#8e63ff', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12 },
+  mainLabel: { fontSize: 14, color: colors.muted, fontWeight: '600' },
+  mainValue: { fontSize: 24, fontWeight: 'bold', color: colors.ink, marginTop: 4 },
+  slash: { fontSize: 16, color: colors.faint },
+  percentageBadge: { backgroundColor: colors.primary, paddingHorizontal: 12, paddingVertical: 6, borderRadius: radius.sm },
   percentageText: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
-  progressContainer: { height: 10, backgroundColor: '#f1f5f9', borderRadius: 5, marginBottom: 15 },
-  progressFill: { height: '100%', backgroundColor: '#8e63ff', borderRadius: 5 },
+  progressContainer: { height: 10, backgroundColor: '#edf2f7', borderRadius: 5, marginBottom: 15 },
+  progressFill: { height: '100%', backgroundColor: colors.primary, borderRadius: 5 },
   infoRow: { flexDirection: 'row', alignItems: 'center' },
-  infoText: { fontSize: 13, color: '#64748b', marginLeft: 6 },
-  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#1a1a1a', marginBottom: 15 },
-  catCard: { backgroundColor: '#fff', padding: 16, borderRadius: 20, marginBottom: 12 },
+  infoText: { fontSize: 13, color: colors.muted, marginLeft: 6 },
+  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: colors.ink, marginBottom: 15 },
+  catCard: { backgroundColor: colors.surface, padding: 16, borderRadius: radius.md, marginBottom: 12, borderWidth: 1, borderColor: colors.border, ...shadows.soft },
   catHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
   catLeft: { flexDirection: 'row', alignItems: 'center' },
   iconBox: { width: 40, height: 40, borderRadius: 12, justifyContent: 'center', alignItems: 'center', marginRight: 12 },
-  catTitle: { fontWeight: 'bold', fontSize: 16, color: '#1e293b' },
-  catValues: { fontSize: 14, fontWeight: '600', color: '#3ad29f' },
-  catProgressBg: { height: 6, backgroundColor: '#f1f5f9', borderRadius: 3 },
+  catTitle: { fontWeight: 'bold', fontSize: 16, color: colors.ink },
+  catValues: { fontSize: 14, fontWeight: '600', color: colors.accent },
+  catProgressBg: { height: 6, backgroundColor: '#edf2f7', borderRadius: 3 },
   catProgressFill: { height: '100%', borderRadius: 3 },
 
   // ESTILOS DO FAB (Botão flutuante)
@@ -190,11 +191,11 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#8e63ff',
+    backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 8,
-    shadowColor: '#8e63ff',
+    shadowColor: colors.primary,
     shadowOpacity: 0.4,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
@@ -203,13 +204,13 @@ const styles = StyleSheet.create({
   // ESTILOS DO MODAL
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(15,23,42,0.45)',
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
+    backgroundColor: colors.surface,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
     padding: 24,
     minHeight: '60%',
   },
@@ -222,7 +223,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#1a1a1a',
+    color: colors.ink,
   },
   inputGroup: {
     marginBottom: 20,
@@ -230,7 +231,7 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1a1a1a',
+    color: colors.ink,
     marginBottom: 8,
   },
   fakeInput: {
@@ -238,20 +239,20 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#f1f5f9',
-    borderRadius: 12,
+    borderColor: colors.border,
+    borderRadius: radius.sm,
     padding: 12,
-    backgroundColor: '#f8fafc',
+    backgroundColor: colors.background,
   },
   placeholderText: {
-    color: '#94a3b8',
+    color: colors.faint,
   },
   textInput: {
     borderWidth: 1,
-    borderColor: '#f1f5f9',
-    borderRadius: 12,
+    borderColor: colors.border,
+    borderRadius: radius.sm,
     padding: 12,
-    backgroundColor: '#f8fafc',
+    backgroundColor: colors.background,
     fontSize: 16,
   },
   labelRow: {
@@ -259,12 +260,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   percentageValue: {
-    color: '#8e63ff',
+    color: colors.primary,
     fontWeight: 'bold',
   },
   sliderLine: {
     height: 4,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: '#edf2f7',
     borderRadius: 2,
     marginVertical: 15,
     justifyContent: 'center',
@@ -281,7 +282,7 @@ const styles = StyleSheet.create({
   },
   helperText: {
     fontSize: 12,
-    color: '#94a3b8',
+    color: colors.faint,
   },
   buttonRow: {
     flexDirection: 'row',
@@ -293,20 +294,20 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: 'center',
     marginRight: 10,
-    borderRadius: 12,
+    borderRadius: radius.sm,
     borderWidth: 1,
-    borderColor: '#f1f5f9',
+    borderColor: colors.border,
   },
   cancelButtonText: {
     fontWeight: 'bold',
-    color: '#1a1a1a',
+    color: colors.ink,
   },
   createButton: {
     flex: 2,
     padding: 16,
     alignItems: 'center',
-    borderRadius: 12,
-    backgroundColor: '#8e63ff',
+    borderRadius: radius.sm,
+    backgroundColor: colors.primary,
   },
   createButtonText: {
     fontWeight: 'bold',

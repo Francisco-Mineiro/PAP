@@ -3,6 +3,7 @@ import {View, Text, TextInput, TouchableOpacity, Alert,StyleSheet, SafeAreaView,
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { account } from '../../src/appwrite'; 
+import { colors, shadows, radius } from '../../src/theme';
 
 export default function SignInScreen() {
   const router = useRouter();
@@ -93,11 +94,13 @@ export default function SignInScreen() {
           style={styles.container}
         >
           <View style={styles.content}>
-            <Text style={styles.title}>Login</Text>
+            <Text style={styles.eyebrow}>Bem-vindo de volta</Text>
+            <Text style={styles.title}>Entrar na Poupa+</Text>
 
             <TextInput
               style={styles.input}
               placeholder="Email"
+              placeholderTextColor={colors.faint}
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
@@ -111,6 +114,7 @@ export default function SignInScreen() {
               <TextInput
                 style={styles.passwordInput}
                 placeholder="Senha"
+                placeholderTextColor={colors.faint}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
@@ -127,7 +131,7 @@ export default function SignInScreen() {
                 <Ionicons
                   name={showPassword ? 'eye-off' : 'eye'}
                   size={24}
-                  color="#666"
+                  color={colors.muted}
                 />
               </TouchableOpacity>
             </View>
@@ -148,7 +152,6 @@ export default function SignInScreen() {
             <View style={styles.linkRow}>
               <TouchableOpacity onPress={goToForgotPassword}>
                 <Text style={styles.linkText}>Esqueceu a senha?</Text>
-                 <Text>ainda não feito</Text>
               </TouchableOpacity>
 
               <TouchableOpacity onPress={gotoRegistrar}>
@@ -173,7 +176,7 @@ export default function SignInScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: colors.background,
   },
   container: {
     flex: 1,
@@ -184,40 +187,39 @@ const styles = StyleSheet.create({
     paddingHorizontal: 28,
   },
   title: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#1a1a1a',
+    fontSize: 30,
+    fontWeight: '800',
+    color: colors.ink,
     textAlign: 'center',
-    marginBottom: 48,
+    marginBottom: 34,
+  },
+  eyebrow: {
+    color: colors.primary,
+    fontSize: 14,
+    fontWeight: '800',
+    textAlign: 'center',
+    marginBottom: 8,
   },
   input: {
     height: 54,
-    backgroundColor: '#ffffff',
-    borderRadius: 14,
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
     paddingHorizontal: 16,
     fontSize: 16,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: colors.border,
     marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
+    ...shadows.soft,
   },
   passwordContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
-    borderRadius: 14,
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: colors.border,
     marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
+    ...shadows.soft,
   },
   passwordInput: {
     flex: 1,
@@ -229,20 +231,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   button: {
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.primary,
     height: 54,
-    borderRadius: 14,
+    borderRadius: radius.md,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 12,
-    shadowColor: '#007AFF',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
+    shadowColor: colors.primary,
+    ...shadows.card,
   },
   buttonDisabled: {
-    backgroundColor: '#a0c4ff',
+    backgroundColor: colors.faint,
     shadowOpacity: 0.1,
   },
   buttonText: {
@@ -257,7 +256,7 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   linkText: {
-    color: '#007AFF',
+    color: colors.primary,
     fontSize: 15,
     fontWeight: '500',
   },
@@ -265,7 +264,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   backText: {
-    color: '#ff3b30',
+    color: colors.danger,
     fontSize: 16,
     fontWeight: '600',
   },

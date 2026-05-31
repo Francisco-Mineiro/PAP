@@ -1,6 +1,7 @@
 import { Tabs, usePathname } from 'expo-router'; 
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet } from 'react-native';      
+import { colors } from '../src/theme';
 
 export default function TabsLayout() {
   const pathname = usePathname();
@@ -10,11 +11,13 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: 'blue',
-        tabBarInactiveTintColor: 'gray',
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.faint,
         tabBarStyle: hideTabBar 
           ? { display: 'none' }                    
-          : { backgroundColor: '#fff' },           
+          : styles.tabBar,
+        tabBarLabelStyle: styles.tabLabel,
+        tabBarItemStyle: styles.tabItem,           
       }}
     >
       <Tabs.Screen
@@ -76,3 +79,25 @@ export default function TabsLayout() {
     </Tabs>
   );
 } 
+
+const styles = StyleSheet.create({
+  tabBar: {
+    backgroundColor: colors.surface,
+    borderTopWidth: 0,
+    height: 70,
+    paddingTop: 8,
+    paddingBottom: 10,
+    shadowColor: '#0f172a',
+    shadowOffset: { width: 0, height: -8 },
+    shadowOpacity: 0.08,
+    shadowRadius: 18,
+    elevation: 12,
+  },
+  tabLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  tabItem: {
+    borderRadius: 16,
+  },
+});

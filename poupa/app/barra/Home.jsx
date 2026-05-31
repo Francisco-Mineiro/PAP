@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet, View, Text, FlatList, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { account } from '../../src/appwrite';
+import { colors, shadows, radius } from '../../src/theme';
 
 const now = new Date();
 const data = now.toLocaleDateString('pt-PT', {
@@ -13,12 +15,13 @@ const data = now.toLocaleDateString('pt-PT', {
 });
 
 const despesasRecentes = [
-  { id: '1', title: 'Netflix', date: '04/01/2026', value: '-9€', color: '#8e63ff' },
-  { id: '2', title: 'Gasolina', date: '03/01/2026', value: '-20€', color: '#3ad29f' },
-  { id: '3', title: 'Supermercado', date: '02/01/2026', value: '-35€', color: '#ff6b6b' },
+  { id: '1', title: 'Netflix', date: '04/01/2026', value: '-9€', color: colors.primary },
+  { id: '2', title: 'Gasolina', date: '03/01/2026', value: '-20€', color: colors.accent },
+  { id: '3', title: 'Supermercado', date: '02/01/2026', value: '-35€', color: colors.danger },
 ];
 
 export default function HomeScreen() {
+  const router = useRouter();
   const [user, setUser] = useState(null);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
@@ -51,7 +54,7 @@ export default function HomeScreen() {
           <Ionicons 
             name={notificationsEnabled ? "notifications-outline" : "notifications-off-outline"} 
             size={24} 
-            color={notificationsEnabled ? "#000" : "#94a3b8"} // Muda de cor para cinza se estiver off
+            color={notificationsEnabled ? colors.ink : colors.faint}
           />
         </TouchableOpacity>
       </View>
@@ -68,7 +71,7 @@ export default function HomeScreen() {
 
         <View style={styles.row}>
           <View style={[styles.smallCard, { backgroundColor: '#eef2ff' }]}>
-            <View style={[styles.iconCircle, { backgroundColor: '#8e63ff' }]}>
+            <View style={[styles.iconCircle, { backgroundColor: colors.primary }]}>
               <Ionicons name="flash" size={18} color="#fff" />
             </View>
             <Text style={styles.smallCardValue}>4.5€</Text>
@@ -76,7 +79,7 @@ export default function HomeScreen() {
           </View>
 
           <View style={[styles.smallCard, { backgroundColor: '#fff5f5' }]}>
-            <View style={[styles.iconCircle, { backgroundColor: '#ff6b6b' }]}>
+            <View style={[styles.iconCircle, { backgroundColor: colors.danger }]}>
               <Ionicons name="receipt" size={18} color="#fff" />
             </View>
             <Text style={styles.smallCardValue}>18</Text>
@@ -125,7 +128,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: colors.background,
   },
   listContent: {
     paddingHorizontal: 20,
@@ -141,45 +144,41 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: 26,
     fontWeight: '800',
-    color: '#1e293b',
+    color: colors.ink,
   },
   date: {
     fontSize: 14,
-    color: '#64748b',
+    color: colors.muted,
     marginTop: 2,
     textTransform: 'capitalize',
   },
   profileBtn: {
     padding: 10,
-    backgroundColor: '#fff',
-    borderRadius: 14,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 5,
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    ...shadows.soft,
   },
   summaryGrid: {
     marginBottom: 30,
   },
   mainBalanceCard: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.surface,
     padding: 24,
-    borderRadius: 24,
+    borderRadius: radius.lg,
     marginBottom: 16,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.border,
+    ...shadows.card,
   },
   mainBalanceLabel: {
     fontSize: 14,
-    color: '#64748b',
+    color: colors.muted,
     fontWeight: '600',
   },
   mainBalanceValue: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#1e293b',
+    color: colors.ink,
     marginVertical: 8,
   },
   trendContainer: {
@@ -188,7 +187,7 @@ const styles = StyleSheet.create({
   },
   trendText: {
     fontSize: 12,
-    color: '#3ad29f',
+    color: colors.accent,
     marginLeft: 4,
     fontWeight: '600',
   },
@@ -199,7 +198,7 @@ const styles = StyleSheet.create({
   smallCard: {
     width: '48%',
     padding: 16,
-    borderRadius: 20,
+    borderRadius: radius.lg,
     justifyContent: 'center',
   },
   iconCircle: {
@@ -213,11 +212,11 @@ const styles = StyleSheet.create({
   smallCardValue: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#1e293b',
+    color: colors.ink,
   },
   smallCardLabel: {
     fontSize: 12,
-    color: '#64748b',
+    color: colors.muted,
     marginTop: 2,
   },
   sectionHeader: {
@@ -229,20 +228,22 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#1e293b',
+    color: colors.ink,
   },
   seeAll: {
-    color: '#8e63ff',
+    color: colors.primary,
     fontWeight: '600',
   },
   expenseItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: colors.surface,
     padding: 16,
-    borderRadius: 18,
+    borderRadius: radius.md,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   expenseLeft: {
     flexDirection: 'row',
@@ -257,14 +258,14 @@ const styles = StyleSheet.create({
   expenseTitle: {
     fontWeight: 'bold',
     fontSize: 15,
-    color: '#1e293b',
+    color: colors.ink,
   },
   expenseDate: {
-    color: '#94a3b8',
+    color: colors.faint,
     fontSize: 12,
   },
   expenseValue: {
-    color: '#1e293b',
+    color: colors.ink,
     fontWeight: '800',
     fontSize: 15,
   },
