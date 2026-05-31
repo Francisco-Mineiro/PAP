@@ -11,7 +11,7 @@ app.use(express.json());
 
 // Configuração do Gemini
 const gemini = new OpenAI({
-  apiKey: process.env.GEMINI_API_KEY,
+  apiKey: process.env.GEMINI_API_KEY?.trim(),
   baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/"
 });
 
