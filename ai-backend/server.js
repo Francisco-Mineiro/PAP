@@ -58,7 +58,7 @@ app.post("/ai", async (req, res) => {
 
 // Para health check (útil)
 app.get("/", (req, res) => {
-  res.json({ status: "AI Finance Assistant is running ✅" });
+  res.json({ status: "Assistente virtual está a funcionar" });
 });
 
 const PORT = process.env.PORT || 3000;
