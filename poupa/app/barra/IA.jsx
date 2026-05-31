@@ -36,7 +36,7 @@ export default function AIChat() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("https://pap-lcm3.onrender.com", {
+      const response = await fetch("https://pap-lcm3.onrender.com/ai", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: currentInput })
