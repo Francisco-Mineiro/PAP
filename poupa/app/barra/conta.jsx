@@ -14,18 +14,21 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { account } from '../../src/appwrite';
 import { colors, shadows, radius } from '../../src/theme';
+import { useFinance } from '../../src/FinanceContext';
 
 export default function Conta() {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [helpModalVisible, setHelpModalVisible] = useState(false);
   const [privacyModalVisible, setPrivacyModalVisible] = useState(false);
+  const { totals, budgets, formatMoney, refreshFinanceData } = useFinance();
 
   useEffect(() => {
     const getUserData = async () => {
       try {
         const currentUser = await account.get();
         setUser(currentUser);
+        refreshFinanceData();
       } catch (error) {
         console.log("Erro ao carregar perfil:", error);
       }
@@ -98,6 +101,34 @@ const gotoprivacidade = () => {
             <Text style={styles.userName}>{user?.name || "Carregando..."}</Text>
             <Text style={styles.userEmail}>{user?.email || "utilizador@email.com"}</Text>
           </View>
+        </View>
+
+        <Text style={styles.sectionTitle}>Resumo financeiro</Text>
+
+        <View style={styles.statsGrid}>
+          <View style={styles.statCard}>
+            <Text style={styles.statLabel}>Gasto este mês</Text>
+            <Text style={styles.statValue}>{formatMoney(totals.monthlySpent)}</Text>
+          </View>
+          <View style={styles.statCard}>
+            <Text style={styles.statLabel}>Orçamento</Text>
+            <Text style={styles.statValue}>{formatMoney(totals.totalBudget)}</Text>
+          </View>
+          <View style={styles.statCard}>
+            <Text style={styles.statLabel}>Despesas</Text>
+            <Text style={styles.statValue}>{totals.expenseCount}</Text>
+          </View>
+          <View style={styles.statCard}>
+            <Text style={styles.statLabel}>Categorias</Text>
+            <Text style={styles.statValue}>{budgets.length}</Text>
+          </View>
+        </View>
+
+        <View style={styles.balanceCard}>
+          <Text style={styles.balanceLabel}>Disponível no orçamento</Text>
+          <Text style={[styles.balanceValue, totals.remainingBudget < 0 && styles.negativeBalance]}>
+            {formatMoney(totals.remainingBudget)}
+          </Text>
         </View>
 
         <Text style={styles.sectionTitle}>Definições</Text>
@@ -306,6 +337,54 @@ const styles = StyleSheet.create({
     color: colors.ink,
     marginBottom: 15,
     marginLeft: 5,
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  statCard: {
+    width: '48%',
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+    ...shadows.soft,
+  },
+  statLabel: {
+    color: colors.muted,
+    fontSize: 12,
+    fontWeight: '700',
+    marginBottom: 8,
+  },
+  statValue: {
+    color: colors.ink,
+    fontSize: 20,
+    fontWeight: '800',
+  },
+  balanceCard: {
+    backgroundColor: colors.ink,
+    borderRadius: radius.lg,
+    padding: 18,
+    marginBottom: 28,
+    ...shadows.card,
+  },
+  balanceLabel: {
+    color: colors.faint,
+    fontSize: 13,
+    fontWeight: '700',
+    marginBottom: 8,
+  },
+  balanceValue: {
+    color: '#fff',
+    fontSize: 26,
+    fontWeight: '900',
+  },
+  negativeBalance: {
+    color: colors.danger,
   },
   menuContainer: {
     backgroundColor: colors.surface,

@@ -45,64 +45,32 @@ export default function EntryScreen() {
 
     <SafeAreaView style={styles.container}>
       <View style={styles.hero}>
-        <View style={styles.brandRow}>
-          <Image 
-            source={require('../assets/img/LogoNBG.png')}  
-            style={styles.logo}
-            resizeMode="contain"
-          />
-          <View>
-            <Text style={styles.brandName}>Poupa+</Text>
-            <Text style={styles.brandTag}>Finanças simples</Text>
-          </View>
-        </View>
+        <Image 
+          source={require('../assets/img/LogoNBG.png')}  
+          style={styles.logo}
+          resizeMode="contain"
+        />
 
-        <Text style={styles.title}>Controla o teu dinheiro com mais calma.</Text>
-        <Text style={styles.subtitle}>Acompanha despesas, limites e decisões num espaço feito para ser claro.</Text>
+        <Text style={styles.brandName}>Poupa+</Text>
+        <Text style={styles.brandTag}>O controlo que te dá liberdade</Text>
 
-        <View style={styles.previewCard}>
-          <View style={styles.previewHeader}>
-            <View>
-              <Text style={styles.previewLabel}>Resumo mensal</Text>
-              <Text style={styles.previewValue}>570€</Text>
-            </View>
-            <View style={styles.previewIcon}>
-              <Ionicons name="trending-up" size={24} color={colors.accent} />
-            </View>
-          </View>
-
-          <View style={styles.progressTrack}>
-            <View style={styles.progressFill} />
-          </View>
-
-          <View style={styles.previewFooter}>
-            <View>
-              <Text style={styles.metricLabel}>Gasto</Text>
-              <Text style={styles.metricValue}>65%</Text>
-            </View>
-            <View style={styles.metricRight}>
-              <Text style={styles.metricLabel}>Orçamento</Text>
-              <Text style={styles.metricValue}>1.620€</Text>
-            </View>
-          </View>
-        </View>
       </View>
       
       <View style={styles.buttonContainer}>
         <Pressable
           style={({ pressed }) => [styles.buttonPrimary, pressed && styles.buttonPressed]}
-          onPress={() => router.push('/autenticacao/Registar')}
+          onPress={() => router.push('/autenticacao/Login')}
         >
-          <Ionicons name="person-add-outline" size={20} color="#fff" />
-          <Text style={styles.textPrimary}>Criar conta</Text>
+          <Ionicons name="log-in-outline" size={21} color="#fff" />
+          <Text style={styles.textPrimary}>Entrar na conta</Text>
         </Pressable>
 
         <Pressable
           style={({ pressed }) => [styles.buttonSecondary, pressed && styles.buttonPressed]}
-          onPress={() => router.push('/autenticacao/Login')}
+          onPress={() => router.push('/autenticacao/Registar')}
         >
-          <Ionicons name="log-in-outline" size={20} color={colors.ink} />
-          <Text style={styles.textSecondary}>Entrar na conta</Text>
+          <Ionicons name="person-add-outline" size={21} color={colors.ink} />
+          <Text style={styles.textSecondary}>Criar conta</Text>
         </Pressable>
 
         <View style={styles.dividerContainer}>
@@ -127,8 +95,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
     justifyContent: 'space-between',
-    paddingHorizontal: 22,
-    paddingBottom: 26,
+    paddingHorizontal: 24,
+    paddingBottom: 28,
   },
   loadingContainer: {
     flex: 1,
@@ -144,105 +112,47 @@ const styles = StyleSheet.create({
   },
   hero: {
     width: '100%',
-    paddingTop: 18,
-  },
-  brandRow: {
-    flexDirection: 'row',
+    flex: 1,
     alignItems: 'center',
-    marginBottom: 34,
+    justifyContent: 'center',
+    paddingBottom: 20,
   },
   logo: {
-    width: 66,
-    height: 66,
-    marginRight: 12,
+    width: 122,
+    height: 122,
+    marginBottom: 14,
   },
   brandName: {
-    fontSize: 24,
+    fontSize: 40,
     fontWeight: '900',
     color: colors.ink,
+    textAlign: 'center',
   },
   brandTag: {
-    marginTop: 2,
-    fontSize: 13,
+    marginTop: 4,
+    fontSize: 16,
     fontWeight: '700',
     color: colors.muted,
+    textAlign: 'center',
+  },
+  copyBlock: {
+    width: '100%',
+    marginTop: 44,
+    alignItems: 'center',
   },
   title: {
-    fontSize: 34,
-    fontWeight: '900',
+    fontSize: 30,
+    fontWeight: '800',
     color: colors.ink,
-    marginBottom: 12,
-    lineHeight: 40,
+    marginBottom: 10,
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
     color: colors.muted,
     lineHeight: 24,
-    marginBottom: 28,
-  },
-  previewCard: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: colors.border,
-    ...shadows.card,
-  },
-  previewHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 18,
-  },
-  previewLabel: {
-    color: colors.muted,
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  previewValue: {
-    color: colors.ink,
-    fontSize: 36,
-    fontWeight: '900',
-    marginTop: 4,
-  },
-  previewIcon: {
-    width: 52,
-    height: 52,
-    borderRadius: 18,
-    backgroundColor: colors.surfaceSoft,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  progressTrack: {
-    height: 10,
-    borderRadius: 999,
-    backgroundColor: '#e8eef5',
-    overflow: 'hidden',
-    marginBottom: 18,
-  },
-  progressFill: {
-    width: '65%',
-    height: '100%',
-    borderRadius: 999,
-    backgroundColor: colors.accent,
-  },
-  previewFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  metricRight: {
-    alignItems: 'flex-end',
-  },
-  metricLabel: {
-    color: colors.faint,
-    fontSize: 12,
-    fontWeight: '700',
-    marginBottom: 4,
-  },
-  metricValue: {
-    color: colors.ink,
-    fontSize: 17,
-    fontWeight: '800',
+    textAlign: 'center',
+    maxWidth: 330,
   },
   buttonContainer: {
     width: '100%',

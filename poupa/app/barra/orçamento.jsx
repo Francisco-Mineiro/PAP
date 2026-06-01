@@ -1,4 +1,4 @@
-import React, { useState } from 'react'; // Adicionado useState
+import React, { useState } from 'react';
 import { 
   View, 
   Text, 
@@ -7,46 +7,68 @@ import {
   SafeAreaView, 
   TouchableOpacity, 
   Modal, 
-  TextInput 
+  TextInput,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, shadows, radius } from '../../src/theme';
-
-const orçamentos = [
-  { id: '1', title: 'Casa', gast: 420, total: 650, icon: 'home-outline', color: colors.primary },
-  { id: '2', title: 'Transportes', gast: 180, total: 300, icon: 'car-outline', color: colors.accent },
-  { id: '3', title: 'Lazer', gast: 95, total: 150, icon: 'heart-outline', color: colors.danger },
-];
+import { useFinance } from '../../src/FinanceContext';
 
 export default function OrcamentoScreen() {
-  // Estado para controlar a visibilidade do Modal
   const [modalVisible, setModalVisible] = useState(false);
+  const [category, setCategory] = useState('');
+  const [limit, setLimit] = useState('');
+  const { budgets, totals, addBudget, formatMoney } = useFinance();
+
+  const closeModal = () => {
+    setModalVisible(false);
+    setCategory('');
+    setLimit('');
+  };
+
+  const handleAddBudget = () => {
+    const created = addBudget({ title: category, total: limit });
+
+    if (!created) {
+      Alert.alert('Erro', 'Preenche a categoria e um limite maior que zero.');
+      return;
+    }
+
+    closeModal();
+  };
+
+  const remainingText =
+    totals.totalBudget > 0
+      ? `Restam ${formatMoney(Math.max(totals.remainingBudget, 0))} para gastar este mês.`
+      : 'Cria um orçamento para acompanhares os teus limites.';
 
   const renderHeader = () => (
     <>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Orçamentos</Text>
-        <Text style={styles.headerSubtitle}>Abril de 2026</Text>
+        <Text style={styles.headerSubtitle}>Este mês</Text>
       </View>
 
       <View style={styles.mainCard}>
         <View style={styles.mainCardTop}>
           <View>
             <Text style={styles.mainLabel}>Total Utilizado</Text>
-            <Text style={styles.mainValue}>1.050€ <Text style={styles.slash}>/ 1.620€</Text></Text>
+            <Text style={styles.mainValue}>
+              {formatMoney(totals.monthlySpent)} <Text style={styles.slash}>/ {formatMoney(totals.totalBudget)}</Text>
+            </Text>
           </View>
           <View style={styles.percentageBadge}>
-            <Text style={styles.percentageText}>65%</Text>
+            <Text style={styles.percentageText}>{Math.round(totals.usedPercent)}%</Text>
           </View>
         </View>
         
         <View style={styles.progressContainer}>
-          <View style={[styles.progressFill, { width: '65%' }]} />
+          <View style={[styles.progressFill, { width: `${totals.usedPercent}%` }]} />
         </View>
 
         <View style={styles.infoRow}>
           <Ionicons name="information-circle-outline" size={16} color={colors.primary} />
-          <Text style={styles.infoText}>Restam 570€ para gastar este mês.</Text>
+          <Text style={styles.infoText}>{remainingText}</Text>
         </View>
       </View>
 
@@ -55,7 +77,7 @@ export default function OrcamentoScreen() {
   );
 
   const renderItem = ({ item }) => {
-    const percent = (item.gast / item.total) * 100;
+    const percent = item.total > 0 ? Math.min((item.gast / item.total) * 100, 100) : 0;
     return (
       <View style={styles.catCard}>
         <View style={styles.catHeader}>
@@ -65,7 +87,9 @@ export default function OrcamentoScreen() {
             </View>
             <Text style={styles.catTitle}>{item.title}</Text>
           </View>
-          <Text style={styles.catValues}>{item.gast}€ / <Text style={{color: colors.faint}}>{item.total}€</Text></Text>
+          <Text style={styles.catValues}>
+            {formatMoney(item.gast)} / <Text style={{color: colors.faint}}>{formatMoney(item.total)}</Text>
+          </Text>
         </View>
         <View style={styles.catProgressBg}>
           <View style={[styles.catProgressFill, { width: `${percent}%`, backgroundColor: item.color }]} />
@@ -77,10 +101,11 @@ export default function OrcamentoScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
-        data={orçamentos}
+        data={budgets}
         renderItem={renderItem}
         keyExtractor={item => item.id}
         ListHeaderComponent={renderHeader}
+        ListEmptyComponent={<Text style={styles.emptyText}>Ainda não criaste orçamentos.</Text>}
         contentContainerStyle={styles.listPadding}
         showsVerticalScrollIndicator={false}
       />
@@ -111,10 +136,13 @@ export default function OrcamentoScreen() {
 
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Categoria</Text>
-              <View style={styles.fakeInput}>
-                <Text style={styles.placeholderText}>Selecione uma categoria</Text>
-                <Ionicons name="chevron-down" size={20} color="#cbd5e1" />
-              </View>
+              <TextInput 
+                style={styles.textInput} 
+                placeholder="Ex: Casa, Transportes, Lazer..." 
+                placeholderTextColor="#cbd5e1"
+                value={category}
+                onChangeText={setCategory}
+              />
             </View>
 
             <View style={styles.inputGroup}>
@@ -124,6 +152,8 @@ export default function OrcamentoScreen() {
                 placeholder="0.00" 
                 keyboardType="numeric"
                 placeholderTextColor="#cbd5e1"
+                value={limit}
+                onChangeText={setLimit}
               />
             </View>
 
@@ -141,11 +171,11 @@ export default function OrcamentoScreen() {
             <View style={styles.buttonRow}>
               <TouchableOpacity 
                 style={styles.cancelButton} 
-                onPress={() => setModalVisible(false)}
+                onPress={closeModal}
               >
                 <Text style={styles.cancelButtonText}>Cancelar</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.createButton}>
+              <TouchableOpacity style={styles.createButton} onPress={handleAddBudget}>
                 <Text style={styles.createButtonText}>Criar Orçamento</Text>
               </TouchableOpacity>
             </View>
@@ -182,6 +212,7 @@ const styles = StyleSheet.create({
   catValues: { fontSize: 14, fontWeight: '600', color: colors.accent },
   catProgressBg: { height: 6, backgroundColor: '#edf2f7', borderRadius: 3 },
   catProgressFill: { height: '100%', borderRadius: 3 },
+  emptyText: { color: colors.muted, textAlign: 'center', marginTop: 12 },
 
   // ESTILOS DO FAB (Botão flutuante)
   fab: {

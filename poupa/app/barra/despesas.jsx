@@ -8,19 +8,37 @@ import {
   SafeAreaView, 
   TouchableOpacity, 
   Modal, 
-  TextInput 
+  TextInput,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, shadows, radius } from '../../src/theme';
-
-const despesas = [
-  { id: '1', title: 'Netflix', cat: 'Entretenimento', date: '04/01/2026', value: '-9.99€', color: colors.primary, icon: 'play' },
-  { id: '2', title: 'Gasolina', cat: 'Transportes', date: '03/01/2026', value: '-42.50€', color: colors.accent, icon: 'car' },
-  { id: '3', title: 'Continente', cat: 'Supermercado', date: '02/01/2026', value: '-78.32€', color: colors.danger, icon: 'cart' },
-];
+import { useFinance } from '../../src/FinanceContext';
 
 export default function DespesasScreen() {
   const [modalVisible, setModalVisible] = useState(false);
+  const [title, setTitle] = useState('');
+  const [category, setCategory] = useState('');
+  const [value, setValue] = useState('');
+  const { expenses, totals, addExpense, formatMoney } = useFinance();
+
+  const closeModal = () => {
+    setModalVisible(false);
+    setTitle('');
+    setCategory('');
+    setValue('');
+  };
+
+  const handleAddExpense = () => {
+    const created = addExpense({ title, category, value });
+
+    if (!created) {
+      Alert.alert('Erro', 'Preenche o título e um valor maior que zero.');
+      return;
+    }
+
+    closeModal();
+  };
 
   const renderHeader = () => (
     <>
@@ -31,15 +49,15 @@ export default function DespesasScreen() {
 
       <View style={styles.blackCard}>
         <Text style={styles.cardLabel}>Total do Mês</Text>
-        <Text style={styles.cardValue}>-186,06€</Text>
+        <Text style={styles.cardValue}>-{formatMoney(totals.monthlySpent)}</Text>
         <View style={styles.cardFooter}>
           <View>
             <Text style={styles.footerLabel}>Transações</Text>
-            <Text style={styles.footerValue}>15</Text>
+            <Text style={styles.footerValue}>{totals.expenseCount}</Text>
           </View>
           <View style={{ alignItems: 'flex-end' }}>
             <Text style={styles.footerLabel}>Maior gasto</Text>
-            <Text style={styles.footerValue}>-78,32€</Text>
+            <Text style={styles.footerValue}>-{formatMoney(totals.biggestExpense)}</Text>
           </View>
         </View>
       </View>
@@ -51,8 +69,9 @@ export default function DespesasScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
-        data={despesas}
+        data={expenses}
         ListHeaderComponent={renderHeader}
+        ListEmptyComponent={<Text style={styles.emptyText}>Ainda não adicionaste despesas.</Text>}
         keyExtractor={item => item.id}
         contentContainerStyle={styles.listPadding}
         showsVerticalScrollIndicator={false}
@@ -67,7 +86,7 @@ export default function DespesasScreen() {
                 <Text style={styles.itemSub}>{item.cat} • {item.date}</Text>
               </View>
             </View>
-            <Text style={styles.itemValue}>{item.value}</Text>
+            <Text style={styles.itemValue}>-{formatMoney(item.amount)}</Text>
           </View>
         )}
       />
@@ -102,15 +121,20 @@ export default function DespesasScreen() {
                 style={styles.textInput} 
                 placeholder="Ex: Almoço, Cinema..." 
                 placeholderTextColor="#cbd5e1"
+                value={title}
+                onChangeText={setTitle}
               />
             </View>
 
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Categoria</Text>
-              <View style={styles.fakeInput}>
-                <Text style={styles.placeholderText}>Selecionar categoria</Text>
-                <Ionicons name="chevron-down" size={20} color="#cbd5e1" />
-              </View>
+              <TextInput 
+                style={styles.textInput} 
+                placeholder="Ex: Casa, Transportes, Lazer..." 
+                placeholderTextColor="#cbd5e1"
+                value={category}
+                onChangeText={setCategory}
+              />
             </View>
 
             <View style={styles.inputGroup}>
@@ -120,17 +144,19 @@ export default function DespesasScreen() {
                 placeholder="0.00" 
                 keyboardType="numeric"
                 placeholderTextColor="#cbd5e1"
+                value={value}
+                onChangeText={setValue}
               />
             </View>
 
             <View style={styles.buttonRow}>
               <TouchableOpacity 
                 style={styles.cancelButton} 
-                onPress={() => setModalVisible(false)}
+                onPress={closeModal}
               >
                 <Text style={styles.cancelButtonText}>Cancelar</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.createButton}>
+              <TouchableOpacity style={styles.createButton} onPress={handleAddExpense}>
                 <Text style={styles.createButtonText}>Adicionar Gasto</Text>
               </TouchableOpacity>
             </View>
@@ -160,6 +186,7 @@ const styles = StyleSheet.create({
   itemTitle: { fontSize: 16, fontWeight: 'bold', color: colors.ink },
   itemSub: { fontSize: 12, color: colors.faint, marginTop: 2 },
   itemValue: { fontSize: 16, fontWeight: '800', color: colors.danger },
+  emptyText: { color: colors.muted, textAlign: 'center', marginTop: 12 },
 
   // BOTÃO FLUTUANTE
   fab: {

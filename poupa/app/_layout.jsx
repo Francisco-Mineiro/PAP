@@ -2,13 +2,15 @@ import { Tabs, usePathname } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet } from 'react-native';      
 import { colors } from '../src/theme';
+import { FinanceProvider } from '../src/FinanceContext';
 
 export default function TabsLayout() {
   const pathname = usePathname();
 
   const hideTabBar = pathname === '/' || pathname === '/index' || pathname === '/autenticacao/Registar' ||  pathname === '/autenticacao/Login';
   return (
-    <Tabs
+    <FinanceProvider>
+      <Tabs
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: colors.primary,
@@ -76,7 +78,8 @@ export default function TabsLayout() {
       <Tabs.Screen name="autenticacao/Login" options={{ href: null }} />
       <Tabs.Screen name="autenticacao/Registar" options={{ href: null }} />
 
-    </Tabs>
+      </Tabs>
+    </FinanceProvider>
   );
 } 
 

@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { account } from '../../src/appwrite';
 import { colors, shadows, radius } from '../../src/theme';
+import { useFinance } from '../../src/FinanceContext';
 
 const now = new Date();
 const data = now.toLocaleDateString('pt-PT', {
@@ -14,22 +15,18 @@ const data = now.toLocaleDateString('pt-PT', {
   day: '2-digit',
 });
 
-const despesasRecentes = [
-  { id: '1', title: 'Netflix', date: '04/01/2026', value: '-9€', color: colors.primary },
-  { id: '2', title: 'Gasolina', date: '03/01/2026', value: '-20€', color: colors.accent },
-  { id: '3', title: 'Supermercado', date: '02/01/2026', value: '-35€', color: colors.danger },
-];
-
 export default function HomeScreen() {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const { expenses, totals, formatMoney, refreshFinanceData } = useFinance();
 
   useEffect(() => {
     const getUser = async () => {
       try {
         const currentUser = await account.get();
         setUser(currentUser);
+        refreshFinanceData();
       } catch (error) {
         console.log("Erro ao buscar utilizador:", error);
       }
@@ -62,10 +59,14 @@ export default function HomeScreen() {
       <View style={styles.summaryGrid}>
         <View style={styles.mainBalanceCard}>
            <Text style={styles.mainBalanceLabel}>Gasto este mês</Text>
-           <Text style={styles.mainBalanceValue}>120,00€</Text>
+           <Text style={styles.mainBalanceValue}>{formatMoney(totals.monthlySpent)}</Text>
            <View style={styles.trendContainer}>
               <Ionicons name="trending-down" size={16} color="#3ad29f" />
-              <Text style={styles.trendText}>12% menos que o mês passado</Text>
+              <Text style={styles.trendText}>
+                {totals.totalBudget > 0
+                  ? `${Math.round(totals.usedPercent)}% do orçamento usado`
+                  : 'Define um orçamento para acompanhar limites'}
+              </Text>
            </View>
         </View>
 
@@ -74,7 +75,7 @@ export default function HomeScreen() {
             <View style={[styles.iconCircle, { backgroundColor: colors.primary }]}>
               <Ionicons name="flash" size={18} color="#fff" />
             </View>
-            <Text style={styles.smallCardValue}>4.5€</Text>
+            <Text style={styles.smallCardValue}>{formatMoney(totals.dailyAverage)}</Text>
             <Text style={styles.smallCardLabel}>Média Diária</Text>
           </View>
 
@@ -82,7 +83,7 @@ export default function HomeScreen() {
             <View style={[styles.iconCircle, { backgroundColor: colors.danger }]}>
               <Ionicons name="receipt" size={18} color="#fff" />
             </View>
-            <Text style={styles.smallCardValue}>18</Text>
+            <Text style={styles.smallCardValue}>{totals.expenseCount}</Text>
             <Text style={styles.smallCardLabel}>Despesas</Text>
           </View>
         </View>
@@ -90,7 +91,7 @@ export default function HomeScreen() {
 
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Atividade Recente</Text>
-        <TouchableOpacity onPress={() => router.replace('/Orçamento')}>
+        <TouchableOpacity onPress={() => router.replace('/barra/despesas')}>
           <Text style={styles.seeAll}>Ver tudo</Text>
         </TouchableOpacity>
       </View>
@@ -106,17 +107,18 @@ export default function HomeScreen() {
           <Text style={styles.expenseDate}>{item.date}</Text>
         </View>
       </View>
-      <Text style={styles.expenseValue}>{item.value}</Text>
+      <Text style={styles.expenseValue}>-{formatMoney(item.amount)}</Text>
     </View>
   );
 
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
-        data={despesasRecentes}
+        data={expenses.slice(0, 5)}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         ListHeaderComponent={renderHeader}
+        ListEmptyComponent={<Text style={styles.emptyText}>Ainda não há despesas recentes.</Text>}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
       />
@@ -268,5 +270,10 @@ const styles = StyleSheet.create({
     color: colors.ink,
     fontWeight: '800',
     fontSize: 15,
+  },
+  emptyText: {
+    color: colors.muted,
+    textAlign: 'center',
+    marginTop: 6,
   },
 });
