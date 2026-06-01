@@ -10,6 +10,8 @@ import {
   Modal, 
   TextInput,
   Alert,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, shadows, radius } from '../../src/theme';
@@ -107,60 +109,62 @@ export default function DespesasScreen() {
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Nova Despesa</Text>
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <Ionicons name="close-circle" size={28} color="#cbd5e1" />
-              </TouchableOpacity>
-            </View>
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>Nova Despesa</Text>
+                <TouchableOpacity onPress={() => setModalVisible(false)}>
+                  <Ionicons name="close-circle" size={28} color="#cbd5e1" />
+                </TouchableOpacity>
+              </View>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Título da Despesa</Text>
-              <TextInput 
-                style={styles.textInput} 
-                placeholder="Ex: Almoço, Cinema..." 
-                placeholderTextColor="#cbd5e1"
-                value={title}
-                onChangeText={setTitle}
-              />
-            </View>
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Título da Despesa</Text>
+                <TextInput 
+                  style={styles.textInput} 
+                  placeholder="Ex: Almoço, Cinema..." 
+                  placeholderTextColor="#cbd5e1"
+                  value={title}
+                  onChangeText={setTitle}
+                />
+              </View>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Categoria</Text>
-              <TextInput 
-                style={styles.textInput} 
-                placeholder="Ex: Casa, Transportes, Lazer..." 
-                placeholderTextColor="#cbd5e1"
-                value={category}
-                onChangeText={setCategory}
-              />
-            </View>
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Categoria</Text>
+                <TextInput 
+                  style={styles.textInput} 
+                  placeholder="Ex: Casa, Transportes, Lazer..." 
+                  placeholderTextColor="#cbd5e1"
+                  value={category}
+                  onChangeText={setCategory}
+                />
+              </View>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Valor (€)</Text>
-              <TextInput 
-                style={styles.textInput} 
-                placeholder="0.00" 
-                keyboardType="numeric"
-                placeholderTextColor="#cbd5e1"
-                value={value}
-                onChangeText={setValue}
-              />
-            </View>
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Valor (€)</Text>
+                <TextInput 
+                  style={styles.textInput} 
+                  placeholder="0.00" 
+                  keyboardType="numeric"
+                  placeholderTextColor="#cbd5e1"
+                  value={value}
+                  onChangeText={setValue}
+                />
+              </View>
 
-            <View style={styles.buttonRow}>
-              <TouchableOpacity 
-                style={styles.cancelButton} 
-                onPress={closeModal}
-              >
-                <Text style={styles.cancelButtonText}>Cancelar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.createButton} onPress={handleAddExpense}>
-                <Text style={styles.createButtonText}>Adicionar Gasto</Text>
-              </TouchableOpacity>
+              <View style={styles.buttonRow}>
+                <TouchableOpacity 
+                  style={styles.cancelButton} 
+                  onPress={closeModal}
+                >
+                  <Text style={styles.cancelButtonText}>Cancelar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.createButton} onPress={handleAddExpense}>
+                  <Text style={styles.createButtonText}>Adicionar Gasto</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
+          </TouchableWithoutFeedback>
         </View>
       </Modal>
     </SafeAreaView>

@@ -5,7 +5,9 @@ import {
   StyleSheet, 
   FlatList, 
   SafeAreaView, 
-  TouchableOpacity, 
+  TouchableOpacity,   
+  Keyboard,
+  TouchableWithoutFeedback,
   Modal, 
   TextInput,
   Alert,
@@ -126,60 +128,62 @@ export default function OrcamentoScreen() {
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Novo Orçamento</Text>
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <Ionicons name="close-circle" size={28} color="#cbd5e1" />
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Categoria</Text>
-              <TextInput 
-                style={styles.textInput} 
-                placeholder="Ex: Casa, Transportes, Lazer..." 
-                placeholderTextColor="#cbd5e1"
-                value={category}
-                onChangeText={setCategory}
-              />
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Limite mensal (€)</Text>
-              <TextInput 
-                style={styles.textInput} 
-                placeholder="0.00" 
-                keyboardType="numeric"
-                placeholderTextColor="#cbd5e1"
-                value={limit}
-                onChangeText={setLimit}
-              />
-            </View>
-
-            <View style={styles.inputGroup}>
-              <View style={styles.labelRow}>
-                <Text style={styles.inputLabel}>Alertar quando atingir</Text>
-                <Text style={styles.percentageValue}>80%</Text>
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>Novo Orçamento</Text>
+                <TouchableOpacity onPress={() => setModalVisible(false)}>
+                  <Ionicons name="close-circle" size={28} color="#cbd5e1" />
+                </TouchableOpacity>
               </View>
-              <View style={styles.sliderLine}>
-                <View style={styles.sliderThumb} />
-              </View>
-              <Text style={styles.helperText}>Receberás um alerta quando gastares 80% do orçamento</Text>
-            </View>
 
-            <View style={styles.buttonRow}>
-              <TouchableOpacity 
-                style={styles.cancelButton} 
-                onPress={closeModal}
-              >
-                <Text style={styles.cancelButtonText}>Cancelar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.createButton} onPress={handleAddBudget}>
-                <Text style={styles.createButtonText}>Criar Orçamento</Text>
-              </TouchableOpacity>
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Categoria</Text>
+                <TextInput 
+                  style={styles.textInput} 
+                  placeholder="Ex: Casa, Transportes, Lazer..." 
+                  placeholderTextColor="#cbd5e1"
+                  value={category}
+                  onChangeText={setCategory}
+                />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Limite mensal (€)</Text>
+                <TextInput 
+                  style={styles.textInput} 
+                  placeholder="0.00" 
+                  keyboardType="numeric"
+                  placeholderTextColor="#cbd5e1"
+                  value={limit}
+                  onChangeText={setLimit}
+                />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <View style={styles.labelRow}>
+                  <Text style={styles.inputLabel}>Alertar quando atingir</Text>
+                  <Text style={styles.percentageValue}>80%</Text>
+                </View>
+                <View style={styles.sliderLine}>
+                  <View style={styles.sliderThumb} />
+                </View>
+                <Text style={styles.helperText}>Receberás um alerta quando gastares 80% do orçamento</Text>
+              </View>
+
+              <View style={styles.buttonRow}>
+                <TouchableOpacity 
+                  style={styles.cancelButton} 
+                  onPress={closeModal}
+                >
+                  <Text style={styles.cancelButtonText}>Cancelar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.createButton} onPress={handleAddBudget}>
+                  <Text style={styles.createButtonText}>Criar Orçamento</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
+          </TouchableWithoutFeedback>
         </View>
       </Modal>
     </SafeAreaView>
