@@ -82,7 +82,24 @@ export function FinanceProvider({ children }) {
       return false;
     }
 
+    const matchingBudget = budgets.find((budget) => budget.title === normalizedCategory);
+
+    if (!matchingBudget) {
+      return {
+        error: 'missingBudget',
+        category: normalizedCategory,
+      };
+    }
+
     const meta = categoryMeta[normalizedCategory] || categoryMeta.Outros;
+    const previousSpent = expenses
+      .filter((expense) => expense.cat === normalizedCategory)
+      .reduce((sum, expense) => sum + expense.amount, 0);
+    const newSpent = previousSpent + amount;
+    const alertPercent = matchingBudget?.alertPercent || 80;
+    const alertAmount = matchingBudget ? (matchingBudget.total * alertPercent) / 100 : 0;
+    const crossedAlert = matchingBudget && previousSpent < alertAmount && newSpent >= alertAmount;
+
     setExpenses((current) => [
       {
         id: `${Date.now()}`,
@@ -96,12 +113,22 @@ export function FinanceProvider({ children }) {
       ...current,
     ]);
 
-    return true;
+    return {
+      alert: crossedAlert
+        ? {
+            category: normalizedCategory,
+            alertPercent,
+            spent: newSpent,
+            total: matchingBudget.total,
+          }
+        : null,
+    };
   };
 
-  const addBudget = ({ title, total }) => {
+  const addBudget = ({ title, total, alertPercent = 80 }) => {
     const normalizedTitle = normalizeCategory(title);
     const amount = parseMoney(total);
+    const normalizedAlert = Math.min(Math.max(Number(alertPercent) || 80, 0), 100);
 
     if (!normalizedTitle || amount <= 0) {
       return false;
@@ -113,6 +140,7 @@ export function FinanceProvider({ children }) {
         id: `${Date.now()}`,
         title: normalizedTitle,
         total: amount,
+        alertPercent: normalizedAlert,
         icon: meta.icon,
         color: meta.color,
       },

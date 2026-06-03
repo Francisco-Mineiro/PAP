@@ -11,25 +11,68 @@ import {
   Modal, 
   TextInput,
   Alert,
+  PanResponder,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, shadows, radius } from '../../src/theme';
 import { useFinance } from '../../src/FinanceContext';
 
+function AlertSlider({ value, onChange }) {
+  const [trackWidth, setTrackWidth] = useState(0);
+
+  const updateValue = (xPosition) => {
+    if (trackWidth <= 0) return;
+
+    const percent = Math.round(Math.min(Math.max(xPosition / trackWidth, 0), 1) * 100);
+    onChange(percent);
+  };
+
+  const panResponder = React.useMemo(
+    () =>
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => true,
+        onMoveShouldSetPanResponder: () => true,
+        onPanResponderGrant: (event) => {
+          Keyboard.dismiss();
+          updateValue(event.nativeEvent.locationX);
+        },
+        onPanResponderMove: (event) => {
+          updateValue(event.nativeEvent.locationX);
+        },
+      }),
+    [trackWidth]
+  );
+
+  return (
+    <View
+      style={styles.sliderTouchArea}
+      onLayout={(event) => setTrackWidth(event.nativeEvent.layout.width)}
+      {...panResponder.panHandlers}
+    >
+      <View style={styles.sliderLine}>
+        <View style={[styles.sliderFill, { width: `${value}%` }]} />
+        <View style={[styles.sliderThumb, { left: `${value}%` }]} />
+      </View>
+    </View>
+  );
+}
+
 export default function OrcamentoScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [category, setCategory] = useState('');
   const [limit, setLimit] = useState('');
+  const [alertPercent, setAlertPercent] = useState(80);
   const { budgets, totals, addBudget, formatMoney } = useFinance();
 
   const closeModal = () => {
     setModalVisible(false);
     setCategory('');
     setLimit('');
+    setAlertPercent(80);
   };
 
   const handleAddBudget = () => {
-    const created = addBudget({ title: category, total: limit });
+    const created = addBudget({ title: category, total: limit, alertPercent });
 
     if (!created) {
       Alert.alert('Erro', 'Preenche a categoria e um limite maior que zero.');
@@ -96,6 +139,7 @@ export default function OrcamentoScreen() {
         <View style={styles.catProgressBg}>
           <View style={[styles.catProgressFill, { width: `${percent}%`, backgroundColor: item.color }]} />
         </View>
+        <Text style={styles.alertText}>Alerta aos {item.alertPercent || 80}%</Text>
       </View>
     );
   };
@@ -163,12 +207,10 @@ export default function OrcamentoScreen() {
               <View style={styles.inputGroup}>
                 <View style={styles.labelRow}>
                   <Text style={styles.inputLabel}>Alertar quando atingir</Text>
-                  <Text style={styles.percentageValue}>80%</Text>
+                  <Text style={styles.percentageValue}>{alertPercent}%</Text>
                 </View>
-                <View style={styles.sliderLine}>
-                  <View style={styles.sliderThumb} />
-                </View>
-                <Text style={styles.helperText}>Receberás um alerta quando gastares 80% do orçamento</Text>
+                <AlertSlider value={alertPercent} onChange={setAlertPercent} />
+                <Text style={styles.helperText}>Receberás um alerta quando gastares {alertPercent}% do orçamento</Text>
               </View>
 
               <View style={styles.buttonRow}>
@@ -216,6 +258,7 @@ const styles = StyleSheet.create({
   catValues: { fontSize: 14, fontWeight: '600', color: colors.accent },
   catProgressBg: { height: 6, backgroundColor: '#edf2f7', borderRadius: 3 },
   catProgressFill: { height: '100%', borderRadius: 3 },
+  alertText: { color: colors.faint, fontSize: 12, fontWeight: '600', marginTop: 8 },
   emptyText: { color: colors.muted, textAlign: 'center', marginTop: 12 },
 
   // ESTILOS DO FAB (Botão flutuante)
@@ -298,22 +341,30 @@ const styles = StyleSheet.create({
     color: colors.primary,
     fontWeight: 'bold',
   },
+  sliderTouchArea: {
+    paddingVertical: 14,
+  },
   sliderLine: {
     height: 4,
     backgroundColor: '#edf2f7',
     borderRadius: 2,
-    marginVertical: 15,
     justifyContent: 'center',
   },
+  sliderFill: {
+    height: '100%',
+    borderRadius: 2,
+    backgroundColor: colors.primary,
+  },
   sliderThumb: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
     backgroundColor: '#fff',
-    borderWidth: 2,
-    borderColor: '#cbd5e1',
+    borderWidth: 3,
+    borderColor: colors.primary,
     position: 'absolute',
-    left: '80%', // Simula os 80%
+    marginLeft: -11,
+    ...shadows.soft,
   },
   helperText: {
     fontSize: 12,

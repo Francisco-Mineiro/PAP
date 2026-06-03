@@ -22,7 +22,7 @@ export default function DespesasScreen() {
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
   const [value, setValue] = useState('');
-  const { expenses, totals, addExpense, formatMoney } = useFinance();
+  const { expenses, budgets, totals, addExpense, formatMoney } = useFinance();
 
   const closeModal = () => {
     setModalVisible(false);
@@ -39,7 +39,22 @@ export default function DespesasScreen() {
       return;
     }
 
+    if (created.error === 'missingBudget') {
+      Alert.alert(
+        'Orçamento obrigatório',
+        `Antes de adicionares uma despesa em ${created.category}, cria primeiro um orçamento com essa categoria.`
+      );
+      return;
+    }
+
     closeModal();
+
+    if (created.alert) {
+      Alert.alert(
+        'Alerta de orçamento',
+        `A categoria ${created.alert.category} atingiu ${created.alert.alertPercent}% do orçamento (${formatMoney(created.alert.spent)} / ${formatMoney(created.alert.total)}).`
+      );
+    }
   };
 
   const renderHeader = () => (
@@ -133,11 +148,37 @@ export default function DespesasScreen() {
                 <Text style={styles.inputLabel}>Categoria</Text>
                 <TextInput 
                   style={styles.textInput} 
-                  placeholder="Ex: Casa, Transportes, Lazer..." 
+                  placeholder={budgets.length > 0 ? 'Escreve uma categoria existente' : 'Cria primeiro um orçamento'} 
                   placeholderTextColor="#cbd5e1"
                   value={category}
                   onChangeText={setCategory}
+                  editable={budgets.length > 0}
                 />
+                {budgets.length > 0 ? (
+                  <View style={styles.categoryChips}>
+                    {budgets.map((budget) => (
+                      <TouchableOpacity
+                        key={budget.id}
+                        style={[
+                          styles.categoryChip,
+                          category.trim().toLowerCase() === budget.title.toLowerCase() && styles.categoryChipActive,
+                        ]}
+                        onPress={() => setCategory(budget.title)}
+                      >
+                        <Text
+                          style={[
+                            styles.categoryChipText,
+                            category.trim().toLowerCase() === budget.title.toLowerCase() && styles.categoryChipTextActive,
+                          ]}
+                        >
+                          {budget.title}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                ) : (
+                  <Text style={styles.helperText}>Vai a Orçamentos e cria uma categoria antes de adicionar despesas.</Text>
+                )}
               </View>
 
               <View style={styles.inputGroup}>
@@ -264,6 +305,37 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     fontSize: 16,
     color: colors.ink,
+  },
+  categoryChips: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 10,
+  },
+  categoryChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+  },
+  categoryChipActive: {
+    borderColor: colors.primary,
+    backgroundColor: '#eef2ff',
+  },
+  categoryChipText: {
+    color: colors.muted,
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  categoryChipTextActive: {
+    color: colors.primary,
+  },
+  helperText: {
+    color: colors.muted,
+    fontSize: 12,
+    marginTop: 8,
   },
   buttonRow: {
     flexDirection: 'row',
