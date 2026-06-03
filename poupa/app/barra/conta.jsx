@@ -60,9 +60,11 @@ const gotoprivacidade = () => {
           onPress: async () => {
             try {
               await account.deleteSession('current');
-              router.replace('/');
             } catch (error) {
-              router.replace('/');
+              console.log("Erro ao terminar sessão:", error);
+            } finally {
+              setUser(null);
+              router.replace('/index');
             }
           } 
         }
