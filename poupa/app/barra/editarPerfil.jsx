@@ -36,7 +36,7 @@ export default function EditarPerfil() {
         setInitialEmail(currentUser.email || '');
       } catch (error) {
         console.log('Erro ao carregar perfil:', error);
-        Alert.alert('Erro', 'Não foi possível carregar o perfil.');
+        Alert.alert('Erro', 'Não tens conta.');
       } finally {
         setLoading(false);
       }

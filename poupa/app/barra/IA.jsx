@@ -18,7 +18,7 @@ export default function AIChat() {
   const [messages, setMessages] = useState([
     {
       id: 'welcome',
-      text: 'Olá! Como posso ajudar com os teus orçamentos ou poupanças hoje?',
+      text: 'Olá! Como posso ajudar?',
       sender: 'ai'
     }
   ]);

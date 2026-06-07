@@ -147,19 +147,30 @@ export default function SignInScreen() {
               )}
             </TouchableOpacity>
 
-            <View style={styles.linkRow}>
+           <TouchableOpacity style={styles.secondaryButton} onPress={handleVoltar} activeOpacity={0.85}>
+                   <Text style={styles.secondaryButtonText}>Voltar</Text>
+                 </TouchableOpacity>
+
+                     <View style={styles.dividerContainer}>
+                      <View style={styles.dividerLine} />
+                      <Text style={styles.dividerText}>ou</Text>
+                      <View style={styles.dividerLine} />
+                    </View>
+            
+               <View style={styles.linkRow}>
+
+
+
+
+
               <TouchableOpacity onPress={gotoRegistrar}>
                 <Text style={styles.linkText}>Criar conta</Text>
               </TouchableOpacity>
-            </View>
 
-            <TouchableOpacity
-              style={styles.backButton}
-              onPress={handleVoltar}
-              disabled={loading}
-            >
-              <Text style={styles.backText}>Voltar</Text>
-            </TouchableOpacity>
+
+
+              
+            </View>
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -215,6 +226,22 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     ...shadows.soft,
   },
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 8,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: colors.border,
+  },
+  dividerText: {
+    marginHorizontal: 12,
+    color: colors.faint,
+    fontSize: 14,
+    fontWeight: '500',
+  },
   passwordInput: {
     flex: 1,
     height: 54,
@@ -244,22 +271,33 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   linkRow: {
+    
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 24,
     marginBottom: 32,
   },
   linkText: {
+    
     color: colors.primary,
     fontSize: 15,
-    fontWeight: '500',
+    fontWeight: '600',
   },
-  backButton: {
+  secondaryButton: {
+    width: '100%',
+    height: 52,
+    borderRadius: radius.md,
     alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
   },
-  backText: {
+  secondaryButtonText: {
     color: colors.danger,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
   },
 });

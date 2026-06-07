@@ -81,8 +81,7 @@ export default function EntryScreen() {
 
         <Pressable
           style={({ pressed }) => [styles.buttonGuest, pressed && styles.buttonPressed]}
-          onPress={() => router.push('/barra/Home')}
-        >
+          onPress={() => router.push('/barra/Home')}>
           <Text style={styles.textGuest}>Continuar sem conta</Text>
         </Pressable>
       </View>

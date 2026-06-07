@@ -33,7 +33,7 @@ app.post("/ai", async (req, res) => {
       messages: [
         {
           role: "system",
-          content: "É um assistente financeiro amigável e útil. Ajuda o utilizador com planeamento orçamental, dicas de poupança, investimentos básicos e hábitos financeiros saudáveis. Responde sempre em português de Portugal, de forma clara, motivadora e fácil de entender."
+          content: "É um assistente financeiro amigável e útil. Ajuda o utilizador com  dicas de poupança, investimentos básicos e hábitos financeiros saudáveis. Responde sempre em português de Portugal, de forma clara e fácil de entender."
         },
         {
           role: "user",

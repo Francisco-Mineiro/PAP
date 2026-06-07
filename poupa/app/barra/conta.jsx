@@ -138,7 +138,7 @@ const gotoprivacidade = () => {
             </Text>
           </View>
           <View style={styles.profileInfo}>
-            <Text style={styles.userName}>{user?.name || "Carregando..."}</Text>
+            <Text style={styles.userName}>{user?.name || "Usuário"}</Text>
             <Text style={styles.userEmail}>{user?.email || "utilizador@email.com"}</Text>
           </View>
         </View>
