@@ -15,7 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { account } from '../../src/appwrite';
 import { colors, shadows, radius } from '../../src/theme';
 import { useFinance } from '../../src/FinanceContext';
-import { showPhoneNotification } from '../../src/notifications';
+import { getNotificationPreference, showPhoneNotification } from '../../src/notifications';
 
 export default function Conta() {
   const router = useRouter();
@@ -86,12 +86,15 @@ const gotoprivacidade = () => {
             try {
               await clearFinanceData();
               setPrivacyModalVisible(false);
-              const notificationShown = await showPhoneNotification({
-                title: "Dados eliminados",
-                body: "Os teus orçamentos e despesas foram apagados.",
-              });
+              const wantsNotifications = await getNotificationPreference();
+              const notificationShown = wantsNotifications
+                ? await showPhoneNotification({
+                    title: "Dados eliminados",
+                    body: "Os teus orçamentos e despesas foram apagados.",
+                  })
+                : false;
 
-              if (!notificationShown) {
+              if (wantsNotifications && !notificationShown) {
                 Alert.alert(
                   "Notificações desligadas",
                   "Os dados foram eliminados, mas tens de permitir notificações para receber avisos no telemóvel."
@@ -175,13 +178,13 @@ const gotoprivacidade = () => {
             icon="person-outline" 
             title="Editar Perfil" 
             subtitle="Nome, email e foto"
-            onPress={() => {}} 
+            onPress={() => router.push('barra/editarPerfil')} 
           />
           <MenuOption 
             icon="notifications-outline" 
             title="Notificações" 
             subtitle="Alertas de gastos e orçamentos"
-            onPress={() => {}} 
+            onPress={() => router.push('barra/notificacoes')} 
           />
           <MenuOption 
             icon="shield-checkmark-outline" 

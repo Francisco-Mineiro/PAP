@@ -77,6 +77,8 @@ export default function TabsLayout() {
       <Tabs.Screen name="index" options={{ href: null }} />
       <Tabs.Screen name="autenticacao/Login" options={{ href: null }} />
       <Tabs.Screen name="autenticacao/Registar" options={{ href: null }} />
+      <Tabs.Screen name="barra/editarPerfil" options={{ href: null }} />
+      <Tabs.Screen name="barra/notificacoes" options={{ href: null }} />
 
       </Tabs>
     </FinanceProvider>

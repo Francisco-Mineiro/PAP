@@ -1,17 +1,20 @@
 // app/barra/Despesas.js
-import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  FlatList, 
-  SafeAreaView, 
-  TouchableOpacity, 
-  Modal, 
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  SafeAreaView,
+  TouchableOpacity,
+  Modal,
   TextInput,
   Alert,
   Keyboard,
   TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, shadows, radius } from '../../src/theme';
@@ -19,11 +22,23 @@ import { useFinance } from '../../src/FinanceContext';
 import { showPhoneNotification } from '../../src/notifications';
 
 export default function DespesasScreen() {
+  const modalScrollRef = useRef(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
   const [value, setValue] = useState('');
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
   const { expenses, budgets, totals, addExpense, formatMoney } = useFinance();
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener('keyboardDidShow', () => setKeyboardVisible(true));
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => setKeyboardVisible(false));
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
 
   const closeModal = () => {
     setModalVisible(false);
@@ -63,6 +78,12 @@ export default function DespesasScreen() {
         );
       }
     }
+  };
+
+  const scrollModalToField = (yPosition) => {
+    setTimeout(() => {
+      modalScrollRef.current?.scrollTo({ y: yPosition, animated: true });
+    }, 250);
   };
 
   const renderHeader = () => (
@@ -117,8 +138,8 @@ export default function DespesasScreen() {
       />
 
       {/* BOTÃO FLUTUANTE (FAB) */}
-      <TouchableOpacity 
-        style={styles.fab} 
+      <TouchableOpacity
+        style={styles.fab}
         onPress={() => setModalVisible(true)}
       >
         <Ionicons name="add" size={32} color="#fff" />
@@ -131,90 +152,108 @@ export default function DespesasScreen() {
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalOverlay}>
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-            <View style={styles.modalContent}>
-              <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>Nova Despesa</Text>
-                <TouchableOpacity onPress={() => setModalVisible(false)}>
-                  <Ionicons name="close-circle" size={28} color="#cbd5e1" />
-                </TouchableOpacity>
-              </View>
+        <KeyboardAvoidingView
+          style={styles.modalAvoidingView}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          <View style={styles.modalOverlay}>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+              <View style={styles.modalContent}>
+                <View style={styles.modalHeader}>
+                  <Text style={styles.modalTitle}>Nova Despesa</Text>
+                  <TouchableOpacity onPress={() => setModalVisible(false)}>
+                    <Ionicons name="close-circle" size={28} color="#cbd5e1" />
+                  </TouchableOpacity>
+                </View>
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Título da Despesa</Text>
-                <TextInput 
-                  style={styles.textInput} 
-                  placeholder="Ex: Almoço, Cinema..." 
-                  placeholderTextColor="#cbd5e1"
-                  value={title}
-                  onChangeText={setTitle}
-                />
-              </View>
-
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Categoria</Text>
-                <TextInput 
-                  style={styles.textInput} 
-                  placeholder={budgets.length > 0 ? 'Escreve uma categoria existente' : 'Cria primeiro um orçamento'} 
-                  placeholderTextColor="#cbd5e1"
-                  value={category}
-                  onChangeText={setCategory}
-                  editable={budgets.length > 0}
-                />
-                {budgets.length > 0 ? (
-                  <View style={styles.categoryChips}>
-                    {budgets.map((budget) => (
-                      <TouchableOpacity
-                        key={budget.id}
-                        style={[
-                          styles.categoryChip,
-                          category.trim().toLowerCase() === budget.title.toLowerCase() && styles.categoryChipActive,
-                        ]}
-                        onPress={() => setCategory(budget.title)}
-                      >
-                        <Text
-                          style={[
-                            styles.categoryChipText,
-                            category.trim().toLowerCase() === budget.title.toLowerCase() && styles.categoryChipTextActive,
-                          ]}
-                        >
-                          {budget.title}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                ) : (
-                  <Text style={styles.helperText}>Vai a Orçamentos e cria uma categoria antes de adicionar despesas.</Text>
-                )}
-              </View>
-
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Valor (€)</Text>
-                <TextInput 
-                  style={styles.textInput} 
-                  placeholder="0.00" 
-                  keyboardType="numeric"
-                  placeholderTextColor="#cbd5e1"
-                  value={value}
-                  onChangeText={setValue}
-                />
-              </View>
-
-              <View style={styles.buttonRow}>
-                <TouchableOpacity 
-                  style={styles.cancelButton} 
-                  onPress={closeModal}
+                <ScrollView
+                  ref={modalScrollRef}
+                  scrollEnabled={keyboardVisible}
+                  bounces={false}
+                  keyboardShouldPersistTaps="handled"
+                  showsVerticalScrollIndicator={false}
+                  contentContainerStyle={[
+                    styles.modalBody,
+                    keyboardVisible && styles.modalBodyKeyboardOpen,
+                  ]}
                 >
-                  <Text style={styles.cancelButtonText}>Cancelar</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.createButton} onPress={handleAddExpense}>
-                  <Text style={styles.createButtonText}>Adicionar Gasto</Text>
-                </TouchableOpacity>
+                  <View style={styles.inputGroup}>
+                    <Text style={styles.inputLabel}>Título da Despesa</Text>
+                    <TextInput
+                      style={styles.textInput}
+                      placeholder="Ex: Almoço, Cinema..."
+                      placeholderTextColor="#cbd5e1"
+                      value={title}
+                      onChangeText={setTitle}
+                    />
+                  </View>
+
+                  <View style={styles.inputGroup}>
+                    <Text style={styles.inputLabel}>Categoria</Text>
+                    <TextInput
+                      style={styles.textInput}
+                      placeholder={budgets.length > 0 ? 'Escreve uma categoria existente' : 'Cria primeiro um orçamento'}
+                      placeholderTextColor="#cbd5e1"
+                      value={category}
+                      onChangeText={setCategory}
+                      editable={budgets.length > 0}
+                    />
+                    {budgets.length > 0 ? (
+                      <View style={styles.categoryChips}>
+                        {budgets.map((budget) => (
+                          <TouchableOpacity
+                            key={budget.id}
+                            style={[
+                              styles.categoryChip,
+                              category.trim().toLowerCase() === budget.title.toLowerCase() && styles.categoryChipActive,
+                            ]}
+                            onPress={() => setCategory(budget.title)}
+                          >
+                            <Text
+                              style={[
+                                styles.categoryChipText,
+                                category.trim().toLowerCase() === budget.title.toLowerCase() && styles.categoryChipTextActive,
+                              ]}
+                            >
+                              {budget.title}
+                            </Text>
+                          </TouchableOpacity>
+                        ))}
+                      </View>
+                    ) : (
+                      <Text style={styles.helperText}>Vai a Orçamentos e cria uma categoria antes de adicionar despesas.</Text>
+                    )}
+                  </View>
+
+                  <View style={styles.inputGroup}>
+                    <Text style={styles.inputLabel}>Valor (€)</Text>
+                    <TextInput
+                      style={styles.textInput}
+                      placeholder="0.00"
+                      keyboardType="numeric"
+                      placeholderTextColor="#cbd5e1"
+                      value={value}
+                      onChangeText={setValue}
+                      onFocus={() => scrollModalToField(150)}
+                    />
+                  </View>
+
+                  <View style={styles.buttonRow}>
+                    <TouchableOpacity
+                      style={styles.cancelButton}
+                      onPress={closeModal}
+                    >
+                      <Text style={styles.cancelButtonText}>Cancelar</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.createButton} onPress={handleAddExpense}>
+                      <Text style={styles.createButtonText}>Adicionar Gasto</Text>
+                    </TouchableOpacity>
+                  </View>
+                </ScrollView>
               </View>
-            </View>
-          </TouchableWithoutFeedback>
-        </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );
@@ -260,6 +299,9 @@ const styles = StyleSheet.create({
   },
 
   // ESTILOS DO MODAL
+  modalAvoidingView: {
+    flex: 1,
+  },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(15,23,42,0.45)',
@@ -271,6 +313,13 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 28,
     padding: 24,
     minHeight: '55%',
+    maxHeight: '90%',
+  },
+  modalBody: {
+    paddingBottom: 20,
+  },
+  modalBodyKeyboardOpen: {
+    paddingBottom: 70,
   },
   modalHeader: {
     flexDirection: 'row',

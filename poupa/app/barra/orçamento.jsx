@@ -1,17 +1,20 @@
-import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  FlatList, 
-  SafeAreaView, 
-  TouchableOpacity,   
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  SafeAreaView,
+  TouchableOpacity,
   Keyboard,
   TouchableWithoutFeedback,
-  Modal, 
+  Modal,
   TextInput,
   Alert,
   PanResponder,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, shadows, radius } from '../../src/theme';
@@ -19,25 +22,37 @@ import { useFinance } from '../../src/FinanceContext';
 
 function AlertSlider({ value, onChange }) {
   const [trackWidth, setTrackWidth] = useState(0);
+  const sliderRef = useRef(null);
+  const trackXRef = useRef(0);
 
-  const updateValue = (xPosition) => {
+  const updateValue = (pageX) => {
     if (trackWidth <= 0) return;
 
+    const xPosition = pageX - trackXRef.current;
     const percent = Math.round(Math.min(Math.max(xPosition / trackWidth, 0), 1) * 100);
     onChange(percent);
+  };
+
+  const measureTrackPosition = () => {
+    sliderRef.current?.measureInWindow((x) => {
+      trackXRef.current = x;
+    });
   };
 
   const panResponder = React.useMemo(
     () =>
       PanResponder.create({
         onStartShouldSetPanResponder: () => true,
+        onStartShouldSetPanResponderCapture: () => true,
         onMoveShouldSetPanResponder: () => true,
+        onMoveShouldSetPanResponderCapture: () => true,
         onPanResponderGrant: (event) => {
           Keyboard.dismiss();
-          updateValue(event.nativeEvent.locationX);
+          measureTrackPosition();
+          updateValue(event.nativeEvent.pageX);
         },
         onPanResponderMove: (event) => {
-          updateValue(event.nativeEvent.locationX);
+          updateValue(event.nativeEvent.pageX);
         },
       }),
     [trackWidth]
@@ -45,8 +60,12 @@ function AlertSlider({ value, onChange }) {
 
   return (
     <View
+      ref={sliderRef}
       style={styles.sliderTouchArea}
-      onLayout={(event) => setTrackWidth(event.nativeEvent.layout.width)}
+      onLayout={(event) => {
+        setTrackWidth(event.nativeEvent.layout.width);
+        measureTrackPosition();
+      }}
       {...panResponder.panHandlers}
     >
       <View style={styles.sliderLine}>
@@ -58,11 +77,23 @@ function AlertSlider({ value, onChange }) {
 }
 
 export default function OrcamentoScreen() {
+  const modalScrollRef = useRef(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [category, setCategory] = useState('');
   const [limit, setLimit] = useState('');
   const [alertPercent, setAlertPercent] = useState(80);
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
   const { budgets, totals, addBudget, formatMoney } = useFinance();
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener('keyboardDidShow', () => setKeyboardVisible(true));
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => setKeyboardVisible(false));
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
 
   const closeModal = () => {
     setModalVisible(false);
@@ -80,6 +111,12 @@ export default function OrcamentoScreen() {
     }
 
     closeModal();
+  };
+
+  const scrollModalToField = (yPosition) => {
+    setTimeout(() => {
+      modalScrollRef.current?.scrollTo({ y: yPosition, animated: true });
+    }, 250);
   };
 
   const remainingText =
@@ -106,7 +143,7 @@ export default function OrcamentoScreen() {
             <Text style={styles.percentageText}>{Math.round(totals.usedPercent)}%</Text>
           </View>
         </View>
-        
+
         <View style={styles.progressContainer}>
           <View style={[styles.progressFill, { width: `${totals.usedPercent}%` }]} />
         </View>
@@ -157,8 +194,8 @@ export default function OrcamentoScreen() {
       />
 
       {/* BOTÃO FLUTUANTE (FAB) - Como na primeira imagem */}
-      <TouchableOpacity 
-        style={styles.fab} 
+      <TouchableOpacity
+        style={styles.fab}
         onPress={() => setModalVisible(true)}
       >
         <Ionicons name="add" size={32} color="#fff" />
@@ -171,62 +208,80 @@ export default function OrcamentoScreen() {
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalOverlay}>
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-            <View style={styles.modalContent}>
-              <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>Novo Orçamento</Text>
-                <TouchableOpacity onPress={() => setModalVisible(false)}>
-                  <Ionicons name="close-circle" size={28} color="#cbd5e1" />
-                </TouchableOpacity>
-              </View>
-
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Categoria</Text>
-                <TextInput 
-                  style={styles.textInput} 
-                  placeholder="Ex: Casa, Transportes, Lazer..." 
-                  placeholderTextColor="#cbd5e1"
-                  value={category}
-                  onChangeText={setCategory}
-                />
-              </View>
-
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Limite mensal (€)</Text>
-                <TextInput 
-                  style={styles.textInput} 
-                  placeholder="0.00" 
-                  keyboardType="numeric"
-                  placeholderTextColor="#cbd5e1"
-                  value={limit}
-                  onChangeText={setLimit}
-                />
-              </View>
-
-              <View style={styles.inputGroup}>
-                <View style={styles.labelRow}>
-                  <Text style={styles.inputLabel}>Alertar quando atingir</Text>
-                  <Text style={styles.percentageValue}>{alertPercent}%</Text>
+        <KeyboardAvoidingView
+          style={styles.modalAvoidingView}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          <View style={styles.modalOverlay}>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+              <View style={styles.modalContent}>
+                <View style={styles.modalHeader}>
+                  <Text style={styles.modalTitle}>Novo Orçamento</Text>
+                  <TouchableOpacity onPress={() => setModalVisible(false)}>
+                    <Ionicons name="close-circle" size={28} color="#cbd5e1" />
+                  </TouchableOpacity>
                 </View>
-                <AlertSlider value={alertPercent} onChange={setAlertPercent} />
-                <Text style={styles.helperText}>Receberás um alerta quando gastares {alertPercent}% do orçamento</Text>
-              </View>
 
-              <View style={styles.buttonRow}>
-                <TouchableOpacity 
-                  style={styles.cancelButton} 
-                  onPress={closeModal}
+                <ScrollView
+                  ref={modalScrollRef}
+                  scrollEnabled={keyboardVisible}
+                  bounces={false}
+                  keyboardShouldPersistTaps="handled"
+                  showsVerticalScrollIndicator={false}
+                  contentContainerStyle={[
+                    styles.modalBody,
+                    keyboardVisible && styles.modalBodyKeyboardOpen,
+                  ]}
                 >
-                  <Text style={styles.cancelButtonText}>Cancelar</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.createButton} onPress={handleAddBudget}>
-                  <Text style={styles.createButtonText}>Criar Orçamento</Text>
-                </TouchableOpacity>
+                  <View style={styles.inputGroup}>
+                    <Text style={styles.inputLabel}>Categoria</Text>
+                    <TextInput
+                      style={styles.textInput}
+                      placeholder="Ex: Casa, Transportes, Lazer..."
+                      placeholderTextColor="#cbd5e1"
+                      value={category}
+                      onChangeText={setCategory}
+                    />
+                  </View>
+
+                  <View style={styles.inputGroup}>
+                    <Text style={styles.inputLabel}>Limite mensal (€)</Text>
+                    <TextInput
+                      style={styles.textInput}
+                      placeholder="0.00"
+                      keyboardType="numeric"
+                      placeholderTextColor="#cbd5e1"
+                      value={limit}
+                      onChangeText={setLimit}
+                      onFocus={() => scrollModalToField(80)}
+                    />
+                  </View>
+
+                  <View style={styles.inputGroup}>
+                    <View style={styles.labelRow}>
+                      <Text style={styles.inputLabel}>Alertar quando atingir</Text>
+                      <Text style={styles.percentageValue}>{alertPercent}%</Text>
+                    </View>
+                    <AlertSlider value={alertPercent} onChange={setAlertPercent} />
+                    <Text style={styles.helperText}>Receberás um alerta quando gastares {alertPercent}% do orçamento</Text>
+                  </View>
+
+                  <View style={styles.buttonRow}>
+                    <TouchableOpacity
+                      style={styles.cancelButton}
+                      onPress={closeModal}
+                    >
+                      <Text style={styles.cancelButtonText}>Cancelar</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.createButton} onPress={handleAddBudget}>
+                      <Text style={styles.createButtonText}>Criar Orçamento</Text>
+                    </TouchableOpacity>
+                  </View>
+                </ScrollView>
               </View>
-            </View>
-          </TouchableWithoutFeedback>
-        </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );
@@ -280,6 +335,9 @@ const styles = StyleSheet.create({
   },
 
   // ESTILOS DO MODAL
+  modalAvoidingView: {
+    flex: 1,
+  },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(15,23,42,0.45)',
@@ -291,6 +349,13 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 28,
     padding: 24,
     minHeight: '60%',
+    maxHeight: '90%',
+  },
+  modalBody: {
+    paddingBottom: 20,
+  },
+  modalBodyKeyboardOpen: {
+    paddingBottom: 70,
   },
   modalHeader: {
     flexDirection: 'row',

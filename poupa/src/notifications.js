@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
+import { account } from './appwrite';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -42,7 +43,40 @@ const ensureNotificationPermissions = async () => {
   return isPermissionGranted(requestedPermissions);
 };
 
+export const getNotificationStatus = async () => {
+  const permissions = await Notifications.getPermissionsAsync();
+  return {
+    granted: isPermissionGranted(permissions),
+    status: permissions.status,
+  };
+};
+
+export const requestNotificationPermissions = ensureNotificationPermissions;
+
+export const getNotificationPreference = async () => {
+  try {
+    const prefs = await account.getPrefs();
+    return prefs?.notificationsEnabled !== false;
+  } catch (error) {
+    return true;
+  }
+};
+
+export const setNotificationPreference = async (enabled) => {
+  const prefs = await account.getPrefs();
+  await account.updatePrefs({
+    ...(prefs || {}),
+    notificationsEnabled: enabled,
+  });
+};
+
 export const showPhoneNotification = async ({ title, body }) => {
+  const wantsNotifications = await getNotificationPreference();
+
+  if (!wantsNotifications) {
+    return false;
+  }
+
   const hasPermission = await ensureNotificationPermissions();
 
   if (!hasPermission) {

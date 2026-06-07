@@ -18,7 +18,6 @@ const data = now.toLocaleDateString('pt-PT', {
 export default function HomeScreen() {
   const router = useRouter();
   const [user, setUser] = useState(null);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const { expenses, totals, formatMoney, refreshFinanceData } = useFinance();
 
   useEffect(() => {
@@ -42,17 +41,12 @@ export default function HomeScreen() {
           <Text style={styles.date}>{data}</Text>
         </View>
         
-        {/* ALTERADO: TouchableOpacity agora alterna o estado */}
         <TouchableOpacity 
           style={styles.profileBtn}
-          onPress={() => setNotificationsEnabled(!notificationsEnabled)}
+          onPress={() => router.push('/barra/notificacoes')}
           activeOpacity={0.7}
         >
-          <Ionicons 
-            name={notificationsEnabled ? "notifications-outline" : "notifications-off-outline"} 
-            size={24} 
-            color={notificationsEnabled ? colors.ink : colors.faint}
-          />
+          <Ionicons name="notifications-outline" size={24} color={colors.ink} />
         </TouchableOpacity>
       </View>
 
