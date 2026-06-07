@@ -150,6 +150,24 @@ export function FinanceProvider({ children }) {
     return true;
   };
 
+  const clearFinanceData = useCallback(async () => {
+    const prefs = await account.getPrefs();
+    const updatedPrefs = {
+      ...(prefs || {}),
+      financeData: {
+        expenses: [],
+        budgets: [],
+      },
+    };
+
+    await account.updatePrefs(updatedPrefs);
+    setAccountPrefs(updatedPrefs);
+    setExpenses([]);
+    setBudgets([]);
+    setHasAccount(true);
+    setReadyToSave(true);
+  }, []);
+
   const totals = useMemo(() => {
     const monthlySpent = expenses.reduce((sum, expense) => sum + expense.amount, 0);
     const totalBudget = budgets.reduce((sum, budget) => sum + budget.total, 0);
@@ -184,6 +202,7 @@ export function FinanceProvider({ children }) {
     totals,
     addExpense,
     addBudget,
+    clearFinanceData,
     refreshFinanceData,
     formatMoney,
   };

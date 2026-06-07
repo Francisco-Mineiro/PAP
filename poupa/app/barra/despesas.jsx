@@ -16,6 +16,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { colors, shadows, radius } from '../../src/theme';
 import { useFinance } from '../../src/FinanceContext';
+import { showPhoneNotification } from '../../src/notifications';
 
 export default function DespesasScreen() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -31,7 +32,7 @@ export default function DespesasScreen() {
     setValue('');
   };
 
-  const handleAddExpense = () => {
+  const handleAddExpense = async () => {
     const created = addExpense({ title, category, value });
 
     if (!created) {
@@ -50,10 +51,17 @@ export default function DespesasScreen() {
     closeModal();
 
     if (created.alert) {
-      Alert.alert(
-        'Alerta de orçamento',
-        `A categoria ${created.alert.category} atingiu ${created.alert.alertPercent}% do orçamento (${formatMoney(created.alert.spent)} / ${formatMoney(created.alert.total)}).`
-      );
+      const notificationShown = await showPhoneNotification({
+        title: 'Alerta de orçamento',
+        body: `A categoria ${created.alert.category} atingiu ${created.alert.alertPercent}% do orçamento (${formatMoney(created.alert.spent)} / ${formatMoney(created.alert.total)}).`,
+      });
+
+      if (!notificationShown) {
+        Alert.alert(
+          'Notificações desligadas',
+          'Ativaste um alerta de orçamento, mas tens de permitir notificações para receber avisos no telemóvel.'
+        );
+      }
     }
   };
 

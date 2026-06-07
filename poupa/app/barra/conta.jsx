@@ -15,13 +15,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { account } from '../../src/appwrite';
 import { colors, shadows, radius } from '../../src/theme';
 import { useFinance } from '../../src/FinanceContext';
+import { showPhoneNotification } from '../../src/notifications';
 
 export default function Conta() {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [helpModalVisible, setHelpModalVisible] = useState(false);
   const [privacyModalVisible, setPrivacyModalVisible] = useState(false);
-  const { totals, budgets, formatMoney, refreshFinanceData } = useFinance();
+  const { totals, budgets, formatMoney, refreshFinanceData, clearFinanceData } = useFinance();
 
   useEffect(() => {
     const getUserData = async () => {
@@ -68,6 +69,40 @@ const gotoprivacidade = () => {
             }
           } 
         }
+      ]
+    );
+  };
+
+  const handleDeleteAllData = () => {
+    Alert.alert(
+      "Eliminar Dados",
+      "Esta ação vai apagar os teus orçamentos e despesas. Queres continuar?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Eliminar",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await clearFinanceData();
+              setPrivacyModalVisible(false);
+              const notificationShown = await showPhoneNotification({
+                title: "Dados eliminados",
+                body: "Os teus orçamentos e despesas foram apagados.",
+              });
+
+              if (!notificationShown) {
+                Alert.alert(
+                  "Notificações desligadas",
+                  "Os dados foram eliminados, mas tens de permitir notificações para receber avisos no telemóvel."
+                );
+              }
+            } catch (error) {
+              console.log("Erro ao eliminar dados financeiros:", error);
+              Alert.alert("Erro", "Não foi possível eliminar os teus dados. Tenta novamente.");
+            }
+          },
+        },
       ]
     );
   };
@@ -249,14 +284,7 @@ const gotoprivacidade = () => {
 
               <TouchableOpacity 
                 style={[styles.contactButton, { backgroundColor: colors.danger }]} 
-                onPress={() => Alert.alert(
-                  "Eliminar Dados", 
-                  "Esta ação é irreversível. Queres continuar?",
-                  [
-                    { text: "Cancelar", style: "cancel" },
-                    { text: "Eliminar", style: "destructive" }
-                  ]
-                )}
+                onPress={handleDeleteAllData}
               >
                 <Ionicons name="trash-outline" size={22} color="#fff" />
                 <Text style={styles.contactButtonText}>Eliminar todos os meus dados</Text>
