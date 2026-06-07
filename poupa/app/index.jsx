@@ -220,6 +220,6 @@ const styles = StyleSheet.create({
     color: colors.muted,
     fontSize: 15,
     fontWeight: '600',
-    textDecorationLine: 'underline', // Transforma o botão "Convidado" num link limpo
+    textDecorationLine: 'underline', 
   },
 });

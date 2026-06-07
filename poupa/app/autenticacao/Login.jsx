@@ -68,9 +68,7 @@ export default function SignInScreen() {
     router.push('autenticacao/Registar'); 
   };
 
-  const goToForgotPassword = () => {//não existe ainda
-    router.push('/forgot-password'); 
-  };
+
 
   const handleVoltar = async () => {
   try {
@@ -150,10 +148,6 @@ export default function SignInScreen() {
             </TouchableOpacity>
 
             <View style={styles.linkRow}>
-              <TouchableOpacity onPress={goToForgotPassword}>
-                <Text style={styles.linkText}>Esqueceu a senha?</Text>
-              </TouchableOpacity>
-
               <TouchableOpacity onPress={gotoRegistrar}>
                 <Text style={styles.linkText}>Criar conta</Text>
               </TouchableOpacity>
