@@ -50,7 +50,15 @@ export default function Notificacoes() {
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton} onPress={() => router.back()} activeOpacity={0.7}>
+          <TouchableOpacity style={styles.backButton} onPress={() =>
+          
+          
+          
+         router.replace('barra/Home')} 
+
+
+          
+          activeOpacity={0.7}>
             <Ionicons name="chevron-back" size={24} color={colors.ink} />
           </TouchableOpacity>
           <Text style={styles.title}>Notificações</Text>

@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
   },
   linkRow: {
     
-    alignItems: 'center',
+    alignItems: 'center', 
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 24,

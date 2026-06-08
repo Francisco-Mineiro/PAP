@@ -22,15 +22,15 @@ app.post("/ai", async (req, res) => {
     return res.status(400).json({ reply: "Por favor, escreve uma mensagem." });
   }
 
-  // Opcional: limitar tamanho da mensagem
   if (userMessage.length > 1000) {
     return res.status(400).json({ reply: "Mensagem demasiado longa." });
   }
 
   try {
+
     const response = await gemini.chat.completions.create({
-      model: "gemini-2.5-flash",
-      messages: [
+  model: "gemini-2.5-flash",
+   messages: [
         {
           role: "system",
           content: "É um assistente financeiro amigável e útil. Ajuda o utilizador com  dicas de poupança, investimentos básicos e hábitos financeiros saudáveis. Responde sempre em português de Portugal, de forma clara e fácil de entender."
@@ -39,10 +39,16 @@ app.post("/ai", async (req, res) => {
           role: "user",
           content: userMessage
         }
-      ],
-      temperature: 0.75,
-      max_tokens: 900
-    });
+      ],temperature: 0.75,
+          max_tokens: 4096,
+         extra_body: {
+          google: {
+      thinking_config: {
+        thinking_budget: 0
+      }
+    }
+  }
+});
 
     const aiReply = response.choices[0]?.message?.content?.trim() || "Desculpa, não consegui processar a resposta.";
 
