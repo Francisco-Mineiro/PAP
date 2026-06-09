@@ -26,6 +26,8 @@ export default function EditarPerfil() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -49,10 +51,28 @@ export default function EditarPerfil() {
     const cleanName = name.trim();
     const cleanEmail = email.trim();
     const emailChanged = cleanEmail !== initialEmail;
+    const wantsPasswordChange = newPassword.length > 0 || confirmPassword.length > 0;
 
     if (!cleanName || !cleanEmail) {
       Alert.alert('Erro', 'Preenche o nome e o email.');
       return;
+    }
+
+    if (wantsPasswordChange) {
+      if (!password) {
+        Alert.alert('Password necessária', 'Para alterar a palavra-passe, escreve a password atual.');
+        return;
+      }
+
+      if (newPassword.length < 8) {
+        Alert.alert('Erro', 'A nova palavra-passe deve ter pelo menos 8 caracteres.');
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        Alert.alert('Erro', 'A confirmação da nova palavra-passe não coincide.');
+        return;
+      }
     }
 
     if (emailChanged && !password) {
@@ -67,13 +87,20 @@ export default function EditarPerfil() {
       if (emailChanged) {
         await account.updateEmail(cleanEmail, password);
         setInitialEmail(cleanEmail);
-        setPassword('');
       }
+
+      if (wantsPasswordChange) {
+        await account.updatePassword(newPassword, password);
+      }
+
+      setPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
 
       Alert.alert('Perfil atualizado', 'As alterações foram guardadas.');
     } catch (error) {
       console.log('Erro ao atualizar perfil:', error);
-      Alert.alert('Erro', 'Não foi possível atualizar o perfil.');
+      Alert.alert('Erro', 'Não foi possível atualizar o perfil. Verifica a password atual.');
     } finally {
       setSaving(false);
     }
@@ -121,20 +148,40 @@ export default function EditarPerfil() {
                 editable={!loading && !saving}
               />
 
-              {email.trim() !== initialEmail && (
-                <>
-                  <Text style={styles.inputLabel}>Password atual</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={password}
-                    onChangeText={setPassword}
-                    placeholder="Necessária para alterar email"
-                    placeholderTextColor={colors.faint}
-                    secureTextEntry
-                    editable={!saving}
-                  />
-                </>
-              )}
+              <Text style={styles.sectionLabel}>Alterar palavra-passe</Text>
+
+              <Text style={styles.inputLabel}>Password atual</Text>
+              <TextInput
+                style={styles.input}
+                value={password}
+                onChangeText={setPassword}
+                placeholder="Necessária para alterar email ou palavra-passe"
+                placeholderTextColor={colors.faint}
+                secureTextEntry
+                editable={!loading && !saving}
+              />
+
+              <Text style={styles.inputLabel}>Nova palavra-passe</Text>
+              <TextInput
+                style={styles.input}
+                value={newPassword}
+                onChangeText={setNewPassword}
+                placeholder="Mínimo 8 caracteres"
+                placeholderTextColor={colors.faint}
+                secureTextEntry
+                editable={!loading && !saving}
+              />
+
+              <Text style={styles.inputLabel}>Confirmar nova palavra-passe</Text>
+              <TextInput
+                style={styles.input}
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                placeholder="Repete a nova palavra-passe"
+                placeholderTextColor={colors.faint}
+                secureTextEntry
+                editable={!loading && !saving}
+              />
 
               <TouchableOpacity
                 style={[styles.saveButton, saving && styles.saveButtonDisabled]}
@@ -199,6 +246,13 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     padding: 18,
     ...shadows.soft,
+  },
+  sectionLabel: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: colors.ink,
+    marginTop: 4,
+    marginBottom: 14,
   },
   inputLabel: {
     fontSize: 14,

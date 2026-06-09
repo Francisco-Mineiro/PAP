@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { Linking, Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import { account } from './appwrite';
 
@@ -68,6 +68,19 @@ export const setNotificationPreference = async (enabled) => {
     ...(prefs || {}),
     notificationsEnabled: enabled,
   });
+};
+
+export const openNotificationSettings = async () => {
+  try {
+    if (Platform.OS === 'ios') {
+      await Linking.openURL('app-settings:');
+      return;
+    }
+
+    await Linking.openSettings();
+  } catch (error) {
+    console.log('Erro ao abrir definições do sistema:', error);
+  }
 };
 
 export const showPhoneNotification = async ({ title, body }) => {

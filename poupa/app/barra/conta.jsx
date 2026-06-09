@@ -1,5 +1,5 @@
 // Conta.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
   Modal,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { account } from '../../src/appwrite';
 import { colors, shadows, radius } from '../../src/theme';
@@ -19,22 +20,25 @@ import { getNotificationPreference, showPhoneNotification } from '../../src/noti
 
 export default function Conta() {
   const router = useRouter();
+  const { refreshFinanceData, clearFinanceData } = useFinance();
   const [user, setUser] = useState(null);
   const [helpModalVisible, setHelpModalVisible] = useState(false);
   const [privacyModalVisible, setPrivacyModalVisible] = useState(false);
 
-  useEffect(() => {
-    const getUserData = async () => {
-      try {
-        const currentUser = await account.get();
-        setUser(currentUser);
-        refreshFinanceData();
-      } catch (error) {
-        console.log("Erro ao carregar perfil:", error);
-      }
-    };
-    getUserData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const getUserData = async () => {
+        try {
+          const currentUser = await account.get();
+          setUser(currentUser);
+          refreshFinanceData();
+        } catch (error) {
+          console.log('Erro ao carregar perfil:', error);
+        }
+      };
+      getUserData();
+    }, [refreshFinanceData])
+  );
 
   const gotoIA = () => {
     router.push('barra/IA'); 
@@ -150,7 +154,7 @@ const gotoprivacidade = () => {
           <MenuOption 
             icon="person-outline" 
             title="Editar Perfil" 
-            subtitle="Nome, email "
+            subtitle="Nome, email e palavra-passe"
             onPress={() => router.push('barra/editarPerfil')} 
           />
           <MenuOption 

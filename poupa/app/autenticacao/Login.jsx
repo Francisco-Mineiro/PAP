@@ -157,20 +157,16 @@ export default function SignInScreen() {
                       <View style={styles.dividerLine} />
                     </View>
             
-               <View style={styles.linkRow}>
+               
 
 
 
 
 
-              <TouchableOpacity onPress={gotoRegistrar}>
-                <Text style={styles.linkText}>Criar conta</Text>
-              </TouchableOpacity>
-
-
-
-              
-            </View>
+              <TouchableOpacity style={styles.buttonGuest} onPress={gotoRegistrar}>
+                <Text style={styles.textGuest}>Criar conta</Text>
+              </TouchableOpacity>  
+           
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -216,6 +212,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     ...shadows.soft,
   },
+  textGuest: {
+    color: colors.primary,
+    fontSize: 15,
+    fontWeight: '600',
+  },
   passwordContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -251,6 +252,12 @@ const styles = StyleSheet.create({
   eyeIcon: {
     paddingHorizontal: 16,
   },
+  buttonGuest: {
+    backgroundColor: 'transparent',
+    paddingVertical: 14,
+    borderRadius: 14,
+    alignItems: 'center',
+  },
   button: {
     backgroundColor: colors.primary,
     height: 54,
@@ -277,12 +284,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 24,
     marginBottom: 32,
-  },
-  linkText: {
-    
-    color: colors.primary,
-    fontSize: 15,
-    fontWeight: '600',
   },
   secondaryButton: {
     width: '100%',

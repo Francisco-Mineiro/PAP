@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet, View, Text, FlatList, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 import { account } from '../../src/appwrite';
 import { colors, shadows, radius } from '../../src/theme';
 import { useFinance } from '../../src/FinanceContext';
@@ -39,18 +40,20 @@ export default function HomeScreen() {
       .slice(0, 5);
   }, [expenses, budgets]);
 
-  useEffect(() => {
-    const getUser = async () => {
-      try {
-        const currentUser = await account.get();
-        setUser(currentUser);
-        refreshFinanceData();
-      } catch (error) {
-        console.log("Erro ao buscar utilizador:", error);
-      }
-    };
-    getUser();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const getUser = async () => {
+        try {
+          const currentUser = await account.get();
+          setUser(currentUser);
+          refreshFinanceData();
+        } catch (error) {
+          console.log('Erro ao buscar utilizador:', error);
+        }
+      };
+      getUser();
+    }, [refreshFinanceData])
+  );
 
   const renderHeader = () => (
     <>

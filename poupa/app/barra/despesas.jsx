@@ -1,4 +1,3 @@
-// app/barra/Despesas.js
 import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
@@ -94,7 +93,7 @@ export default function DespesasScreen() {
       </View>
 
       <View style={styles.blackCard}>
-        <Text style={styles.cardLabel}>Total do Mês</Text>
+        <Text style={styles.cardLabel}>Gastos do Mês</Text>
         <Text style={styles.cardValue}>-{formatMoney(totals.monthlySpent)}</Text>
        
       </View>
@@ -128,7 +127,6 @@ export default function DespesasScreen() {
         )}
       />
 
-      {/* BOTÃO FLUTUANTE (FAB) */}
       <TouchableOpacity
         style={styles.fab}
         onPress={() => setModalVisible(true)}
@@ -136,7 +134,6 @@ export default function DespesasScreen() {
         <Ionicons name="add" size={32} color="#fff" />
       </TouchableOpacity>
 
-      {/* MODAL DE NOVA DESPESA */}
       <Modal
         animationType="slide"
         transparent={true}

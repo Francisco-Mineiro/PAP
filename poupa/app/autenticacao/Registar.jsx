@@ -10,6 +10,7 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; 
 import { colors, shadows, radius } from '../../src/theme';
@@ -22,30 +23,33 @@ export default function TestAppwrite() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [showPassword, setShowPassword] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const register = async () => {
-    if (!email || !password || !name) {
+    if (!email.trim() || !password || !name.trim()) {
       Alert.alert('Erro', 'Por favor preenche todos os campos');
       return;
     }
 
-    try {
-      const response = await account.create(
-        ID.unique(),
-        email,
-        password,
-        name
-      );
+    if (password.length < 8) {
+      Alert.alert('Erro', 'A password tem de ter pelo menos 8 caracteres.');
+      return;
+    }
 
-      console.log('User registered successfully:', response);
-      Alert.alert('Sucesso', 'Conta criada com sucesso!');
+    setLoading(true);
+    Keyboard.dismiss();
+
+    try {
+      await account.create(ID.unique(), email.trim(), password, name.trim());
+      await account.createEmailPasswordSession(email.trim(), password);
 
       setEmail('');
       setPassword('');
       setName('');
-      Keyboard.dismiss();
-      
+      setShowPassword(false);
+
+      router.replace('barra/Home');
     } catch (error) {
       console.error('Registration error:', error);
 
@@ -60,9 +64,13 @@ export default function TestAppwrite() {
       }
 
       Alert.alert('Erro', errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
-
+const gotoLogin = () => {
+    router.push('autenticacao/Login'); 
+  };
   const Voltar = async () => {
   try {
     await account.get(); // 
@@ -92,6 +100,7 @@ export default function TestAppwrite() {
             placeholderTextColor={colors.faint}
             value={name}
             onChangeText={setName}
+            editable={!loading}
           />
 
           <TextInput
@@ -102,6 +111,7 @@ export default function TestAppwrite() {
             onChangeText={setEmail}
             keyboardType="email-address"
             autoCapitalize="none"
+            editable={!loading}
           />
 
           <View style={styles.passwordContainer}>
@@ -111,12 +121,14 @@ export default function TestAppwrite() {
               placeholderTextColor={colors.faint}
               value={password}
               onChangeText={setPassword}
-              secureTextEntry={!showPassword} 
+              secureTextEntry={!showPassword}
               autoCapitalize="none"
+              editable={!loading}
             />
             <TouchableOpacity
               style={styles.eyeIcon}
               onPress={() => setShowPassword(!showPassword)}
+              disabled={loading}
             >
               <Ionicons
                 name={showPassword ? 'eye-off' : 'eye'}
@@ -126,14 +138,33 @@ export default function TestAppwrite() {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={styles.primaryButton} onPress={register} activeOpacity={0.85}>
-            <Text style={styles.primaryButtonText}>Criar conta</Text>
+          <TouchableOpacity
+            style={[styles.primaryButton, loading && styles.primaryButtonDisabled]}
+            onPress={register}
+            activeOpacity={0.85}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.primaryButtonText}>Criar conta</Text>
+            )}
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.secondaryButton} onPress={Voltar} activeOpacity={0.85}>
+          <TouchableOpacity style={styles.secondaryButton} onPress={Voltar} activeOpacity={0.85} disabled={loading}>
             <Text style={styles.secondaryButtonText}>Voltar</Text>
           </TouchableOpacity>
-        </View>
+          
+                     <View style={styles.dividerContainer}>
+                      <View style={styles.dividerLine} />
+                      <Text style={styles.dividerText}>ou</Text>
+                      <View style={styles.dividerLine} />
+                    </View>
+
+          <TouchableOpacity onPress={gotoLogin}>
+                <Text style={styles.textGuest}>Entrar na conta</Text>
+              </TouchableOpacity>
+            </View>
       </SafeAreaView>
     </TouchableWithoutFeedback>
   );
@@ -162,6 +193,11 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     color: colors.primary,
   },
+  textGuest: {
+    color: colors.primary,
+    fontSize: 15,
+    fontWeight: '600',
+  },
   input: {
     width: '100%',
     padding: 12,
@@ -171,6 +207,22 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     backgroundColor: colors.surface,
     ...shadows.soft,
+  },
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 8,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: colors.border,
+  },
+  dividerText: {
+    marginHorizontal: 12,
+    color: colors.faint,
+    fontSize: 14,
+    fontWeight: '500',
   },
   passwordContainer: {
     width: '100%',
@@ -205,6 +257,9 @@ const styles = StyleSheet.create({
     color: colors.surface,
     fontSize: 16,
     fontWeight: '800',
+  },
+  primaryButtonDisabled: {
+    backgroundColor: colors.faint,
   },
   secondaryButton: {
     width: '100%',
