@@ -95,7 +95,7 @@ export default function EditarPerfil() {
             </View>
 
             <View style={styles.avatar}>
-              <Text style={styles.avatarText}>{name ? name.charAt(0).toUpperCase() : 'U'}</Text>
+              <Ionicons name="person" size={50} color="#fff" />
             </View>
 
             <View style={styles.card}>
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     width: 86,
     height: 86,
     borderRadius: 43,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.faint,
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',

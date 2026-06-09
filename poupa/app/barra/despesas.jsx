@@ -99,7 +99,7 @@ export default function DespesasScreen() {
        
       </View>
 
-      <Text style={styles.sectionTitle}>Histórico Recente</Text>
+      <Text style={styles.sectionTitle}>Histórico Despesas</Text>
     </>
   );
 

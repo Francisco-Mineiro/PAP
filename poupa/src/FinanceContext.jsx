@@ -180,6 +180,7 @@ export function FinanceProvider({ children }) {
       biggestExpense,
       dailyAverage,
       expenseCount: expenses.length,
+      budgetCount: budgets.length,
       remainingBudget: totalBudget - monthlySpent,
       usedPercent: totalBudget > 0 ? Math.min((monthlySpent / totalBudget) * 100, 100) : 0,
     };

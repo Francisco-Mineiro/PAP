@@ -132,7 +132,9 @@ const gotoprivacidade = () => {
 
         <View style={styles.profileCard}>
           <View style={styles.avatar}>
-            
+           
+                          <Ionicons name="person" size={40} color="#fff" />
+                 
           </View>
           <View style={styles.profileInfo}>
             <Text style={styles.userName}>{user?.name || "Usuário"}</Text>

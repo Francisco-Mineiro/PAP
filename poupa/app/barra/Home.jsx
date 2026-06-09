@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet, View, Text, FlatList, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -18,7 +18,26 @@ const data = now.toLocaleDateString('pt-PT', {
 export default function HomeScreen() {
   const router = useRouter();
   const [user, setUser] = useState(null);
-  const { expenses, totals, formatMoney, refreshFinanceData } = useFinance();
+  const { expenses, budgets, totals, formatMoney, refreshFinanceData } = useFinance();
+
+  const recentActivity = useMemo(() => {
+    const expenseItems = expenses.map((expense) => ({
+      ...expense,
+      type: 'expense',
+      sortDate: Number(expense.id) || 0,
+    }));
+
+    const budgetItems = budgets.map((budget) => ({
+      ...budget,
+      type: 'budget',
+      sortDate: Number(budget.id) || 0,
+      date: new Date(Number(budget.id) || Date.now()).toLocaleDateString('pt-PT'),
+    }));
+
+    return [...expenseItems, ...budgetItems]
+      .sort((a, b) => b.sortDate - a.sortDate)
+      .slice(0, 5);
+  }, [expenses, budgets]);
 
   useEffect(() => {
     const getUser = async () => {
@@ -52,30 +71,28 @@ export default function HomeScreen() {
 
       <View style={styles.summaryGrid}>
         <View style={styles.mainBalanceCard}>
-           <Text style={styles.mainBalanceLabel}>Gasto este mês</Text>
-           <Text style={styles.mainBalanceValue}>{formatMoney(totals.monthlySpent)}</Text>
+           <Text style={styles.mainBalanceLabel}>Disponível no orçamento</Text>
+           <Text style={styles.mainBalanceValue}>{formatMoney(totals.remainingBudget)}</Text>
            <View style={styles.trendContainer}>
-              <Ionicons name="trending-down" size={16} color="#3ad29f" />
-              <Text style={styles.trendText}>
-                {totals.totalBudget > 0
-                  ? `${Math.round(totals.usedPercent)}% do orçamento usado`
-                  : 'Define um orçamento para acompanhar limites'}
-              </Text>
+              
+            
            </View>
         </View>
+
+    
 
         <View style={styles.row}>
           <View style={[styles.smallCard, { backgroundColor: '#eef2ff' }]}>
             <View style={[styles.iconCircle, { backgroundColor: colors.primary }]}>
-              <Ionicons name="flash" size={18} color="#fff" />
+              <Ionicons name="wallet-outline" size={18} color="#fff" />
             </View>
-         <Text style={styles.smallCardValue}>{totals.expenseCount}</Text>
+            <Text style={styles.smallCardValue}>{totals.budgetCount}</Text>
             <Text style={styles.smallCardLabel}>Orçamentos</Text>
           </View>
 
           <View style={[styles.smallCard, { backgroundColor: '#fff5f5' }]}>
             <View style={[styles.iconCircle, { backgroundColor: colors.danger }]}>
-              <Ionicons name="receipt" size={18} color="#fff" />
+              <Ionicons name="cash" size={18} color="#fff" />
             </View>
             <Text style={styles.smallCardValue}>{totals.expenseCount}</Text>
             <Text style={styles.smallCardLabel}>Despesas</Text>
@@ -85,9 +102,6 @@ export default function HomeScreen() {
 
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Atividade Recente</Text>
-        <TouchableOpacity onPress={() => router.replace('/barra/despesas')}>
-          <Text style={styles.seeAll}>Ver tudo</Text>
-        </TouchableOpacity>
       </View>
     </>
   );
@@ -98,21 +112,25 @@ export default function HomeScreen() {
         <View style={[styles.expenseLine, { backgroundColor: item.color }]} />
         <View>
           <Text style={styles.expenseTitle}>{item.title}</Text>
-          <Text style={styles.expenseDate}>{item.date}</Text>
+          <Text style={styles.expenseDate}>
+            {item.type === 'budget' ? `Orçamento · ${item.date}` : item.date}
+          </Text>
         </View>
       </View>
-      <Text style={styles.expenseValue}>-{formatMoney(item.amount)}</Text>
+      <Text style={[styles.expenseValue, item.type === 'budget' && styles.budgetValue]}>
+        {item.type === 'budget' ? formatMoney(item.total) : `-${formatMoney(item.amount)}`}
+      </Text>
     </View>
   );
 
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
-        data={expenses.slice(0, 5)}
-        keyExtractor={(item) => item.id}
+        data={recentActivity}
+        keyExtractor={(item) => `${item.type}-${item.id}`}
         renderItem={renderItem}
         ListHeaderComponent={renderHeader}
-        ListEmptyComponent={<Text style={styles.emptyText}>Ainda não há despesas recentes.</Text>}
+        ListEmptyComponent={<Text style={styles.emptyText}>Ainda não há atividade recente.</Text>}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
       />
@@ -120,7 +138,6 @@ export default function HomeScreen() {
   );
 }
 
-// ... (teus estilos mantêm-se iguais)
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -226,10 +243,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.ink,
   },
-  seeAll: {
-    color: colors.primary,
-    fontWeight: '600',
-  },
+ 
   expenseItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -261,7 +275,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   expenseValue: {
-    color: colors.ink,
+    color: colors.danger,
+    fontWeight: '800',
+    fontSize: 15,
+  },
+  budgetValue: {
+    color: colors.primary,
     fontWeight: '800',
     fontSize: 15,
   },

@@ -151,7 +151,7 @@ export default function OrcamentoScreen() {
       
       </View>
 
-      <Text style={styles.sectionTitle}>Limites por Categoria</Text>
+      <Text style={styles.sectionTitle}>Histórico Orçamentos</Text>
     </>
   );
 
