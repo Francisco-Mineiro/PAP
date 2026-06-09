@@ -96,16 +96,7 @@ export default function DespesasScreen() {
       <View style={styles.blackCard}>
         <Text style={styles.cardLabel}>Total do Mês</Text>
         <Text style={styles.cardValue}>-{formatMoney(totals.monthlySpent)}</Text>
-        <View style={styles.cardFooter}>
-          <View>
-            <Text style={styles.footerLabel}>Transações</Text>
-            <Text style={styles.footerValue}>{totals.expenseCount}</Text>
-          </View>
-          <View style={{ alignItems: 'flex-end' }}>
-            <Text style={styles.footerLabel}>Maior gasto</Text>
-            <Text style={styles.footerValue}>-{formatMoney(totals.biggestExpense)}</Text>
-          </View>
-        </View>
+       
       </View>
 
       <Text style={styles.sectionTitle}>Histórico Recente</Text>

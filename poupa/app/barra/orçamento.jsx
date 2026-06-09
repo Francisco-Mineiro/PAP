@@ -148,10 +148,7 @@ export default function OrcamentoScreen() {
           <View style={[styles.progressFill, { width: `${totals.usedPercent}%` }]} />
         </View>
 
-        <View style={styles.infoRow}>
-          <Ionicons name="information-circle-outline" size={16} color={colors.primary} />
-          <Text style={styles.infoText}>{remainingText}</Text>
-        </View>
+      
       </View>
 
       <Text style={styles.sectionTitle}>Limites por Categoria</Text>

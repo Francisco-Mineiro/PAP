@@ -54,7 +54,7 @@ export default function Notificacoes() {
           
           
           
-         router.replace('barra/Home')} 
+         router.replace('barra/conta')} 
 
 
           

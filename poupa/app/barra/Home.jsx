@@ -69,8 +69,8 @@ export default function HomeScreen() {
             <View style={[styles.iconCircle, { backgroundColor: colors.primary }]}>
               <Ionicons name="flash" size={18} color="#fff" />
             </View>
-            <Text style={styles.smallCardValue}>{formatMoney(totals.dailyAverage)}</Text>
-            <Text style={styles.smallCardLabel}>Média Diária</Text>
+         <Text style={styles.smallCardValue}>{totals.expenseCount}</Text>
+            <Text style={styles.smallCardLabel}>Orçamentos</Text>
           </View>
 
           <View style={[styles.smallCard, { backgroundColor: '#fff5f5' }]}>

@@ -22,7 +22,6 @@ export default function Conta() {
   const [user, setUser] = useState(null);
   const [helpModalVisible, setHelpModalVisible] = useState(false);
   const [privacyModalVisible, setPrivacyModalVisible] = useState(false);
-  const { totals, budgets, formatMoney, refreshFinanceData, clearFinanceData } = useFinance();
 
   useEffect(() => {
     const getUserData = async () => {
@@ -119,7 +118,7 @@ const gotoprivacidade = () => {
         <Text style={[styles.menuTitle, { color }]}>{title}</Text>
         {subtitle && <Text style={styles.menuSubtitle}>{subtitle}</Text>}
       </View>
-      <Ionicons name="chevron-forward" size={18} color={colors.faint} />
+    
     </TouchableOpacity>
   );
 
@@ -130,12 +129,10 @@ const gotoprivacidade = () => {
         <Text style={styles.greeting}>Minha Conta</Text>
         <Text style={styles.date}>Gere o teu perfil e definições</Text>
 
-        {/* Card de Perfil */}
+
         <View style={styles.profileCard}>
           <View style={styles.avatar}>
-            <Text style={styles.avatarText}>
-              {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
-            </Text>
+            
           </View>
           <View style={styles.profileInfo}>
             <Text style={styles.userName}>{user?.name || "Usuário"}</Text>
@@ -143,33 +140,7 @@ const gotoprivacidade = () => {
           </View>
         </View>
 
-        <Text style={styles.sectionTitle}>Resumo financeiro</Text>
-
-        <View style={styles.statsGrid}>
-          <View style={styles.statCard}>
-            <Text style={styles.statLabel}>Gasto este mês</Text>
-            <Text style={styles.statValue}>{formatMoney(totals.monthlySpent)}</Text>
-          </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statLabel}>Orçamento</Text>
-            <Text style={styles.statValue}>{formatMoney(totals.totalBudget)}</Text>
-          </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statLabel}>Despesas</Text>
-            <Text style={styles.statValue}>{totals.expenseCount}</Text>
-          </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statLabel}>Categorias</Text>
-            <Text style={styles.statValue}>{budgets.length}</Text>
-          </View>
-        </View>
-
-        <View style={styles.balanceCard}>
-          <Text style={styles.balanceLabel}>Disponível no orçamento</Text>
-          <Text style={[styles.balanceValue, totals.remainingBudget < 0 && styles.negativeBalance]}>
-            {formatMoney(totals.remainingBudget)}
-          </Text>
-        </View>
+      
 
         <Text style={styles.sectionTitle}>Definições</Text>
 
@@ -177,7 +148,7 @@ const gotoprivacidade = () => {
           <MenuOption 
             icon="person-outline" 
             title="Editar Perfil" 
-            subtitle="Nome, email e foto"
+            subtitle="Nome, email "
             onPress={() => router.push('barra/editarPerfil')} 
           />
           <MenuOption 
@@ -341,15 +312,10 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.faint,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 15,
-  },
-  avatarText: {
-    color: '#fff',
-    fontSize: 24,
-    fontWeight: 'bold',
   },
   profileInfo: {
     flex: 1,
