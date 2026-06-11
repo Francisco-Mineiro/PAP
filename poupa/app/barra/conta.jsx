@@ -20,7 +20,7 @@ import { getNotificationPreference, showPhoneNotification } from '../../src/noti
 
 export default function Conta() {
   const router = useRouter();
-  const { refreshFinanceData, clearFinanceData } = useFinance();
+  const { refreshFinanceData, clearFinanceData, resetFinanceState } = useFinance();
   const [user, setUser] = useState(null);
   const [helpModalVisible, setHelpModalVisible] = useState(false);
   const [privacyModalVisible, setPrivacyModalVisible] = useState(false);
@@ -52,26 +52,45 @@ const gotoprivacidade = () => {
 
 
 
-  const handleLogout = async () => {
+  const handleEditProfile = () => {
+    if (!user) {
+      Alert.alert(
+        'Conta necessária',
+        'Precisas de criar ou entrar numa conta para editar o perfil.',
+        [{ text: 'OK' }]
+      );
+      return;
+    }
+
+    router.push('barra/editarPerfil');
+  };
+
+  const handleLogout = () => {
+    if (!user) {
+      router.replace('/');
+      return;
+    }
+
     Alert.alert(
-      "Terminar Sessão",
-      "Tens a certeza que queres sair?",
+      'Terminar Sessão',
+      'Tens a certeza que queres sair?',
       [
-        { text: "Cancelar", style: "cancel" },
-        { 
-          text: "Sair", 
-          style: "destructive", 
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Sair',
+          style: 'destructive',
           onPress: async () => {
             try {
+              resetFinanceState();
               await account.deleteSession('current');
             } catch (error) {
-              console.log("Erro ao terminar sessão:", error);
+              console.log('Erro ao terminar sessão:', error);
             } finally {
               setUser(null);
-              router.replace('/index');
+              router.replace('/');
             }
-          } 
-        }
+          },
+        },
       ]
     );
   };
@@ -155,7 +174,7 @@ const gotoprivacidade = () => {
             icon="person-outline" 
             title="Editar Perfil" 
             subtitle="Nome, email e palavra-passe"
-            onPress={() => router.push('barra/editarPerfil')} 
+            onPress={handleEditProfile}
           />
           <MenuOption 
             icon="notifications-outline" 

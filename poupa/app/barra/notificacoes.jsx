@@ -225,13 +225,7 @@ export default function Notificacoes() {
                   <Text style={styles.emptyBudgetsTitle}>Sem orçamentos configurados</Text>
                   <Text style={styles.emptyBudgetsText}>
                     Cria um orçamento e define a percentagem de alerta para receber avisos ao gastar.
-                  </Text>
-                  <TouchableOpacity
-                    style={styles.emptyBudgetsButton}
-                    onPress={() => router.push('barra/orçamento')}
-                  >
-                    <Text style={styles.emptyBudgetsButtonText}>Ir para Orçamentos</Text>
-                  </TouchableOpacity>
+                  </Text>  
                 </View>
               ) : (
                 budgetsWithAlerts.map((budget) => {

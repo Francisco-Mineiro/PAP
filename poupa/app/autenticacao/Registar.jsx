@@ -16,9 +16,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors, shadows, radius } from '../../src/theme';
 
 import { account, ID } from '../../src/appwrite';
+import { useFinance } from '../../src/FinanceContext';
 
 export default function TestAppwrite() {
   const router = useRouter();
+  const { refreshFinanceData, resetFinanceState } = useFinance();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -49,6 +51,7 @@ export default function TestAppwrite() {
       setName('');
       setShowPassword(false);
 
+      await refreshFinanceData();
       router.replace('barra/Home');
     } catch (error) {
       console.error('Registration error:', error);
@@ -73,11 +76,13 @@ const gotoLogin = () => {
   };
   const Voltar = async () => {
   try {
-    await account.get(); // 
+    await account.get();
+    resetFinanceState();
     await account.deleteSession('current');
     console.log('Logout successful');
   } catch (error) {
     console.log('No session or error during logout:', error);
+    resetFinanceState();
   } finally {
  router.replace('/');
 

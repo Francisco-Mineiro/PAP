@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import {View, Text, TextInput, TouchableOpacity, Alert,StyleSheet, SafeAreaView,Keyboard,TouchableWithoutFeedback, ActivityIndicator, KeyboardAvoidingView, Platform, } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { account } from '../../src/appwrite'; 
+import { account } from '../../src/appwrite';
+import { useFinance } from '../../src/FinanceContext';
 import { colors, shadows, radius } from '../../src/theme';
 
 export default function SignInScreen() {
   const router = useRouter();
+  const { refreshFinanceData, resetFinanceState } = useFinance();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -47,6 +49,7 @@ export default function SignInScreen() {
       setPassword('');
       setShowPassword(false);
 
+      await refreshFinanceData();
       router.replace('barra/Home');
     } catch (err) {
       console.error('Erro no login:', err);
@@ -72,11 +75,13 @@ export default function SignInScreen() {
 
   const handleVoltar = async () => {
   try {
-    await account.get(); // 
+    await account.get();
+    resetFinanceState();
     await account.deleteSession('current');
     console.log('Logout successful');
   } catch (error) {
     console.log('No session or error during logout:', error);
+    resetFinanceState();
   } finally {
  router.replace('/');
 

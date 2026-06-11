@@ -36,43 +36,69 @@ export function FinanceProvider({ children }) {
   const [readyToSave, setReadyToSave] = useState(false);
   const [hasAccount, setHasAccount] = useState(false);
   const [accountPrefs, setAccountPrefs] = useState({});
+  const [userId, setUserId] = useState(null);
+
+  const resetFinanceState = useCallback(() => {
+    setHasAccount(false);
+    setReadyToSave(false);
+    setUserId(null);
+    setExpenses([]);
+    setBudgets([]);
+    setAccountPrefs({});
+  }, []);
 
   const refreshFinanceData = useCallback(async () => {
+    setReadyToSave(false);
+
     try {
+      const currentUser = await account.get();
       const prefs = await account.getPrefs();
       const savedData = prefs?.financeData;
 
+      setUserId(currentUser.$id);
       setAccountPrefs(prefs || {});
-      if (savedData?.expenses) setExpenses(savedData.expenses);
-      if (savedData?.budgets) setBudgets(savedData.budgets);
+      setExpenses(savedData?.expenses ?? []);
+      setBudgets(savedData?.budgets ?? []);
       setHasAccount(true);
     } catch (error) {
-      setHasAccount(false);
+      resetFinanceState();
     } finally {
       setReadyToSave(true);
     }
-  }, []);
+  }, [resetFinanceState]);
 
   useEffect(() => {
     refreshFinanceData();
   }, [refreshFinanceData]);
 
   useEffect(() => {
-    if (!readyToSave || !hasAccount) return;
+    if (!readyToSave || !hasAccount || !userId) return;
 
-    account.updatePrefs({
-      ...accountPrefs,
-      financeData: {
-        expenses,
-        budgets,
-      },
+    let cancelled = false;
+
+    account.get().then((currentUser) => {
+      if (cancelled || currentUser.$id !== userId) return;
+
+      return account.updatePrefs({
+        ...accountPrefs,
+        financeData: {
+          expenses,
+          budgets,
+        },
+      });
     }).then(() => {
-      setHasAccount(true);
+      if (!cancelled) setHasAccount(true);
     }).catch((error) => {
-      setHasAccount(false);
-      console.log('Erro ao guardar dados financeiros:', error);
+      if (!cancelled) {
+        setHasAccount(false);
+        console.log('Erro ao guardar dados financeiros:', error);
+      }
     });
-  }, [accountPrefs, budgets, expenses, hasAccount, readyToSave]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [accountPrefs, budgets, expenses, hasAccount, readyToSave, userId]);
 
   const addExpense = ({ title, category, value }) => {
     const normalizedCategory = normalizeCategory(category);
@@ -205,6 +231,7 @@ export function FinanceProvider({ children }) {
     addBudget,
     clearFinanceData,
     refreshFinanceData,
+    resetFinanceState,
     formatMoney,
   };
 
