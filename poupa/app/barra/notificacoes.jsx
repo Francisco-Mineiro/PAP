@@ -86,11 +86,7 @@ export default function Notificacoes() {
   );
 
   const handleBack = () => {
-    if (router.canGoBack()) {
-      router.back();
-      return;
-    }
-    router.replace('barra/conta');
+    router.replace('/barra/conta');
   };
 
   const handleToggle = async (enabled) => {

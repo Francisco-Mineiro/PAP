@@ -180,7 +180,7 @@ const gotoprivacidade = () => {
             icon="notifications-outline" 
             title="Notificações" 
             subtitle="Alertas de gastos e orçamentos"
-            onPress={() => router.push('barra/notificacoes')} 
+            onPress={() => router.push('/barra/notificacoes')} 
           />
           <MenuOption 
             icon="shield-checkmark-outline" 
