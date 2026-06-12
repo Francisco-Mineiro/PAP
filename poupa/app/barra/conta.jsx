@@ -1,14 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-  Alert,
-  TouchableOpacity,
-  ScrollView,
-  Modal,
-} from 'react-native';
+import {View,Text,StyleSheet,SafeAreaView,Alert,TouchableOpacity,ScrollView,Modal,} from 'react-native';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
