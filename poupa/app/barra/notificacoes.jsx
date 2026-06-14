@@ -14,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
+import { account } from '../../src/appwrite';
 import { colors, radius, shadows } from '../../src/theme';
 import { useFinance } from '../../src/FinanceContext';
 import {
@@ -64,6 +65,7 @@ export default function Notificacoes() {
   const [testing, setTesting] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [permissionGranted, setPermissionGranted] = useState(false);
+  const [hasLoggedAccount, setHasLoggedAccount] = useState(false);
 
   const loadState = useCallback(async () => {
     setLoading(true);
@@ -72,6 +74,14 @@ export default function Notificacoes() {
         getNotificationPreference(),
         getNotificationStatus(),
       ]);
+
+      try {
+        await account.get();
+        setHasLoggedAccount(true);
+      } catch (error) {
+        setHasLoggedAccount(false);
+      }
+
       setNotificationsEnabled(enabled);
       setPermissionGranted(status.granted);
     } finally {
@@ -91,6 +101,14 @@ export default function Notificacoes() {
 
   const handleToggle = async (enabled) => {
     if (!enabled) {
+      if (!hasLoggedAccount) {
+        Alert.alert(
+          'Conta necessária',
+          'Só uma pessoa com uma conta iniciada pode desativar as notificações.'
+        );
+        return;
+      }
+
       await setNotificationPreference(false);
       setNotificationsEnabled(false);
       return;
@@ -178,14 +196,7 @@ export default function Notificacoes() {
           
 
             <View style={styles.card}>
-              <View style={styles.toggleRow}>
-                <View style={[styles.mainIcon, notificationsEnabled && styles.mainIconActive]}>
-                  <Ionicons
-                    name={notificationsEnabled ? 'notifications' : 'notifications-off-outline'}
-                    size={24}
-                    color={notificationsEnabled ? '#fff' : colors.muted}
-                  />
-                </View>
+              <View style={styles.toggleRow}>             
                 <View style={styles.toggleText}>
                   <Text style={styles.cardTitle}>Receber notificações</Text>
                   <Text style={styles.cardText}>
@@ -197,7 +208,7 @@ export default function Notificacoes() {
                 <Switch
                   value={notificationsEnabled}
                   onValueChange={handleToggle}
-                  trackColor={{ false: colors.border, true: '#bfdbfe00' }}
+                  trackColor={{ false: colors.border, true: '#657bc2' }}
                   thumbColor={notificationsEnabled ? colors.primary : colors.faint}
                 />
               </View>

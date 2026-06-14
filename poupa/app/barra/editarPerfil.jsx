@@ -160,9 +160,7 @@ export default function EditarPerfil() {
 
             <View style={styles.card}>
               <View style={styles.cardHeader}>
-                <View style={[styles.cardIcon, { backgroundColor: '#eef2ff' }]}>
-                  <Ionicons name="person-outline" size={20} color={colors.primary} />
-                </View>
+
                 <View>
                   <Text style={styles.sectionLabel}>Dados da conta</Text>
                   <Text style={styles.sectionHint}>Altera o teu nome e email.</Text>
@@ -219,9 +217,7 @@ export default function EditarPerfil() {
 
             <View style={styles.card}>
               <View style={styles.cardHeader}>
-                <View style={[styles.cardIcon, { backgroundColor: '#fff7ed' }]}>
-                  <Ionicons name="lock-closed-outline" size={20} color={colors.warning} />
-                </View>
+          
                 <View>
                   <Text style={styles.sectionLabel}>Palavra-passe</Text>
                   <Text style={styles.sectionHint}>Define uma nova palavra-passe.</Text>
@@ -374,7 +370,7 @@ const styles = StyleSheet.create({
     marginTop: 18,
   },
   saveButtonSecondary: {
-    backgroundColor: colors.ink,
+    backgroundColor: colors.primary,
   },
   saveButtonDisabled: {
     opacity: 0.65,
