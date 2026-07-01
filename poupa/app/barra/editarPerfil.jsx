@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   Alert,
   Keyboard,
@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 import { account } from '../../src/appwrite';
 import { colors, radius, shadows } from '../../src/theme';
 
@@ -36,29 +37,60 @@ export default function EditarPerfil() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  useEffect(() => {
-    const loadProfile = async () => {
-      try {
-        const currentUser = await account.get();
-        setName(currentUser.name || '');
-        setEmail(currentUser.email || '');
-        setInitialEmail(currentUser.email || '');
-        setHasAccount(true);
-      } catch (error) {
-        console.log('Erro ao carregar perfil:', error);
-        setHasAccount(false);
-        Alert.alert(
-          'Conta necessária',
-          'Precisas de criar ou entrar numa conta para editar o perfil.',
-          [{ text: 'OK', onPress: () => goBackToConta(router) }]
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
+  const clearForm = useCallback(() => {
+    setName('');
+    setEmail('');
+    setInitialEmail('');
+    setEmailPassword('');
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+  }, []);
 
-    loadProfile();
-  }, [router]);
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
+
+      const loadProfile = async () => {
+        setLoading(true);
+
+        try {
+          const currentUser = await account.get();
+          if (!active) return;
+
+          setName(currentUser.name || '');
+          setEmail(currentUser.email || '');
+          setInitialEmail(currentUser.email || '');
+          setEmailPassword('');
+          setCurrentPassword('');
+          setNewPassword('');
+          setConfirmPassword('');
+          setHasAccount(true);
+        } catch (error) {
+          console.log('Erro ao carregar perfil:', error);
+          if (!active) return;
+
+          clearForm();
+          setHasAccount(false);
+          Alert.alert(
+            'Conta necessária',
+            'Precisas de criar ou entrar numa conta para editar o perfil.',
+            [{ text: 'OK', onPress: () => goBackToConta(router) }]
+          );
+        } finally {
+          if (active) {
+            setLoading(false);
+          }
+        }
+      };
+
+      loadProfile();
+
+      return () => {
+        active = false;
+      };
+    }, [clearForm, router])
+  );
 
   const handleSaveProfile = async () => {
     const cleanName = name.trim();

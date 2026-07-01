@@ -24,6 +24,7 @@ export default function Conta() {
           refreshFinanceData();
         } catch (error) {
           console.log('Erro ao carregar perfil:', error);
+          setUser(null);
         }
       };
       getUserData();
