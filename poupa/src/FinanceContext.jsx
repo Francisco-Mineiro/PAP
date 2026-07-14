@@ -30,6 +30,7 @@ const todayPt = () => new Date().toLocaleDateString('pt-PT');
 
 const formatMoney = (value) => `${value.toFixed(2).replace('.', ',')}€`;
 
+//Carregar dados da Conta 
 export function FinanceProvider({ children }) {
   const [expenses, setExpenses] = useState([]);
   const [budgets, setBudgets] = useState([]);
@@ -70,6 +71,8 @@ export function FinanceProvider({ children }) {
   useEffect(() => {
     refreshFinanceData();
   }, [refreshFinanceData]);
+//Carregar dados da Conta (fim)
+
 
   useEffect(() => {
     if (!readyToSave || !hasAccount || !userId) return;
@@ -100,6 +103,8 @@ export function FinanceProvider({ children }) {
     };
   }, [accountPrefs, budgets, expenses, hasAccount, readyToSave, userId]);
 
+
+//Adcioonar Despesa
   const addExpense = ({ title, category, value }) => {
     const normalizedCategory = normalizeCategory(category);
     const amount = parseMoney(value);
@@ -116,6 +121,8 @@ export function FinanceProvider({ children }) {
         category: normalizedCategory,
       };
     }
+    
+//Adcioonar Despesa (fim)
 
     const meta = categoryMeta[normalizedCategory] || categoryMeta.Outros;
     const previousSpent = expenses
@@ -151,6 +158,7 @@ export function FinanceProvider({ children }) {
     };
   };
 
+//Adcioonar Orçamento
   const addBudget = ({ title, total, alertPercent = 80 }) => {
     const normalizedTitle = normalizeCategory(title);
     const amount = parseMoney(total);
@@ -175,6 +183,8 @@ export function FinanceProvider({ children }) {
 
     return true;
   };
+  
+//Adcioonar Orçamento (fim)
 
   const clearFinanceData = useCallback(async () => {
     const prefs = await account.getPrefs();

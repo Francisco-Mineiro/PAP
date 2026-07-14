@@ -4,6 +4,8 @@ import { StyleSheet } from 'react-native';
 import { colors } from '../src/theme';
 import { FinanceProvider } from '../src/FinanceContext';
 
+
+//Explica barra de navegação
 export default function TabsLayout() {
   const pathname = usePathname();
 
@@ -81,6 +83,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="barra/notificacoes" options={{ href: null }} />
 
       </Tabs>
+      //Explica barra de navegação(fim)
     </FinanceProvider>
   );
 } 

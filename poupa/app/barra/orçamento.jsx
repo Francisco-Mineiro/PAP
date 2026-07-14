@@ -250,7 +250,7 @@ export default function OrcamentoScreen() {
                       placeholderTextColor="#cbd5e1"
                       value={limit}
                       onChangeText={setLimit}
-                      onFocus={() => scrollModalToField(80)}
+                      onFocus={() => scrollModalToField(0)}
                     />
                   </View>
 

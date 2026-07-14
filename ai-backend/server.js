@@ -1,4 +1,3 @@
-// index.js
 require('dotenv').config();
 const express = require("express");
 const OpenAI = require("openai");
@@ -9,12 +8,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Configuração do Gemini
+
 const gemini = new OpenAI({
   apiKey: process.env.GEMINI_API_KEY?.trim(),
   baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/"
 });
 
+//Resposata AI
 app.post("/ai", async (req, res) => {
   const userMessage = req.body.message?.trim();
 
@@ -28,6 +28,7 @@ app.post("/ai", async (req, res) => {
 
   try {
 
+    
     const response = await gemini.chat.completions.create({
   model: "gemini-2.5-flash",
    messages: [
@@ -49,6 +50,7 @@ app.post("/ai", async (req, res) => {
     }
   }
 });
+//Resposata AI(Fim)
 
     const aiReply = response.choices[0]?.message?.content?.trim() || "Desculpa, não consegui processar a resposta.";
 
@@ -62,7 +64,6 @@ app.post("/ai", async (req, res) => {
   }
 });
 
-// Para health check (útil)
 app.get("/", (req, res) => {
   res.json({ status: "Assistente virtual está a funcionar" });
 });

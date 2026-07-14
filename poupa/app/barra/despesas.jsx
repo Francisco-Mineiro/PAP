@@ -222,7 +222,7 @@ export default function DespesasScreen() {
                       placeholderTextColor="#cbd5e1"
                       value={value}
                       onChangeText={setValue}
-                      onFocus={() => scrollModalToField(150)}
+                      onFocus={() => scrollModalToField(30)}
                     />
                   </View>
 

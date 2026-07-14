@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { 
   View, 
   Text, 
@@ -7,25 +7,112 @@ import {
   FlatList, 
   StyleSheet, 
   SafeAreaView, 
-  KeyboardAvoidingView, 
-  Platform, 
-  ActivityIndicator 
+  ActivityIndicator,
+  Platform,
+  Keyboard,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { account } from '../../src/appwrite';
 import { colors, shadows, radius } from '../../src/theme';
 
+const welcomeMessages = [
+  {
+    id: 'welcome',
+    text: 'Olá! Como posso ajudar?',
+    sender: 'ai',
+  },
+];
+
 export default function AIChat() {
-  const [messages, setMessages] = useState([
-    {
-      id: 'welcome',
-      text: 'Olá! Como posso ajudar?',
-      sender: 'ai'
-    }
-  ]);
+  const insets = useSafeAreaInsets();
+  const [messages, setMessages] = useState(welcomeMessages);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [historyReady, setHistoryReady] = useState(false);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const flatListRef = useRef(null);
+  const currentUserIdRef = useRef(null);
+  const hydratingRef = useRef(false);
+
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const showSubscription = Keyboard.addListener(showEvent, (event) => {
+      const height = event?.endCoordinates?.height ?? 0;
+      setKeyboardHeight(height);
+    });
+
+    const hideSubscription = Keyboard.addListener(hideEvent, () => {
+      setKeyboardHeight(0);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
+  const loadChatHistory = useCallback(async () => {
+    hydratingRef.current = true;
+    setHistoryReady(false);
+    setMessages(welcomeMessages);
+    currentUserIdRef.current = null;
+
+    try {
+      const currentUser = await account.get();
+      const prefs = await account.getPrefs();
+      const savedMessages = prefs?.aiChatData?.messages;
+
+      currentUserIdRef.current = currentUser.$id;
+
+      if (Array.isArray(savedMessages) && savedMessages.length > 0) {
+        setMessages(savedMessages);
+      }
+    } catch (error) {
+      setMessages(welcomeMessages);
+    } finally {
+      hydratingRef.current = false;
+      setHistoryReady(true);
+    }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadChatHistory();
+    }, [loadChatHistory])
+  );
+
+  useEffect(() => {
+    if (!historyReady || hydratingRef.current || !currentUserIdRef.current) {
+      return;
+    }
+
+    const persistHistory = async () => {
+      try {
+        const currentUser = await account.get();
+
+        if (currentUser.$id !== currentUserIdRef.current) {
+          return;
+        }
+
+        const prefs = await account.getPrefs();
+        await account.updatePrefs({
+          ...(prefs || {}),
+          aiChatData: {
+            messages,
+          },
+        });
+      } catch (error) {
+        console.log('Erro ao guardar histórico da IA:', error);
+      }
+    };
+
+    persistHistory();
+  }, [historyReady, messages]);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -62,6 +149,14 @@ export default function AIChat() {
     }
   }, [messages]);
 
+  useEffect(() => {
+    if (flatListRef.current) {
+      requestAnimationFrame(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      });
+    }
+  }, [keyboardHeight]);
+
   return (
     <SafeAreaView style={styles.container}>
       
@@ -72,6 +167,7 @@ export default function AIChat() {
 
       <FlatList
         ref={flatListRef}
+        style={styles.list}
         data={messages}
         renderItem={({ item }) => (
           <View style={[styles.messageWrapper, item.sender === 'user' ? styles.userWrapper : styles.aiWrapper]}>
@@ -85,6 +181,7 @@ export default function AIChat() {
         keyExtractor={item => item.id}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       />
 
       {isLoading && (
@@ -94,10 +191,7 @@ export default function AIChat() {
         </View>
       )}
 
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardContainer}
-      >
+      <View style={[styles.composer, { bottom: insets.bottom + Math.max(keyboardHeight - 90, -30) }]}>
         <View style={styles.inputArea}>
           <View style={styles.inputContainer}>
             <TextInput
@@ -117,7 +211,7 @@ export default function AIChat() {
             </TouchableOpacity>
           </View>
         </View>
-      </KeyboardAvoidingView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -134,11 +228,11 @@ const styles = StyleSheet.create({
   },
   headerTitle: { fontSize: 26, fontWeight: '800', color: colors.ink },
   headerSubtitle: { fontSize: 15, color: colors.muted, marginTop: 2 },
-  keyboardContainer: { flex: 0 },
+  list: { flex: 1 },
   listContent: { 
     paddingHorizontal: 20, 
-    paddingBottom: 30,
-    flexGrow: 1 
+    paddingBottom: 84,
+    flexGrow: 1,
   },
 
   messageWrapper: { marginVertical: 6, flexDirection: 'row' },
@@ -160,9 +254,14 @@ const styles = StyleSheet.create({
   loadingWrapper: { flexDirection: 'row', justifyContent: 'center', padding: 12 },
   loadingText: { marginLeft: 8, color: colors.muted },
 
+  composer: {
+    width: '100%',
+    position: 'absolute',
+    left: 0,
+    right: 0,
+  },
   inputArea: { 
     paddingHorizontal: 16, 
-    paddingBottom: 12, 
     paddingTop: 8,
     backgroundColor: colors.background,
   },
