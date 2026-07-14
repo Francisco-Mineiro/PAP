@@ -50,7 +50,7 @@ app.post("/ai", async (req, res) => {
     }
   }
 });
-//Resposata AI(Fim)
+//Resposta AI(Fim)
 
     const aiReply = response.choices[0]?.message?.content?.trim() || "Desculpa, não consegui processar a resposta.";
 
