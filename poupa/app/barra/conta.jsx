@@ -72,7 +72,7 @@ const gotoprivacidade = () => {
           style: 'destructive',
           onPress: async () => {
             try {
-              await account.deleteSessions();
+              await account.deleteSession('current');
               resetFinanceState();
             } catch (error) {
               console.log('Erro ao terminar sessão:', error);
