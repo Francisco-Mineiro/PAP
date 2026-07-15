@@ -26,6 +26,7 @@ export default function EntryScreen() {
 
     checkAuth();
   }, []);
+  
   //Verificar sessão (fim)
 
   //Redirecionar
@@ -77,16 +78,12 @@ export default function EntryScreen() {
         </Pressable>
 
         <View style={styles.dividerContainer}>
-          <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>ou</Text>
-          <View style={styles.dividerLine} />
+         
         </View>
-
-        <Pressable
-          style={({ pressed }) => [styles.buttonGuest, pressed && styles.buttonPressed]}
-          onPress={() => router.push('/barra/Home')}>
-          <Text style={styles.textGuest}>Continuar sem conta</Text>
-        </Pressable>
+        
+        <View style={styles.dividerContainer}>
+         
+        </View>
       </View>
     </SafeAreaView>
   );

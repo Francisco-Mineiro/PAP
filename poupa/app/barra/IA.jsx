@@ -8,6 +8,8 @@ import {
   StyleSheet, 
   SafeAreaView, 
   ActivityIndicator,
+  Animated,
+  Easing,
   Platform,
   Keyboard,
 } from 'react-native';
@@ -24,6 +26,61 @@ const welcomeMessages = [
     sender: 'ai',
   },
 ];
+
+function ThinkingDots() {
+  const dot1 = useRef(new Animated.Value(0.3)).current;
+  const dot2 = useRef(new Animated.Value(0.3)).current;
+  const dot3 = useRef(new Animated.Value(0.3)).current;
+
+  useEffect(() => {
+    const createPulse = (value, delay) =>
+      Animated.loop(
+        Animated.sequence([
+          Animated.delay(delay),
+          Animated.timing(value, {
+            toValue: 1,
+            duration: 280,
+            easing: Easing.inOut(Easing.quad),
+            useNativeDriver: true,
+          }),
+          Animated.timing(value, {
+            toValue: 0.3,
+            duration: 280,
+            easing: Easing.inOut(Easing.quad),
+            useNativeDriver: true,
+          }),
+        ])
+      );
+
+    const animations = [
+      createPulse(dot1, 0),
+      createPulse(dot2, 140),
+      createPulse(dot3, 280),
+    ];
+
+    animations.forEach(animation => animation.start());
+
+    return () => {
+      animations.forEach(animation => animation.stop());
+    };
+  }, [dot1, dot2, dot3]);
+
+  return (
+    <View style={styles.thinkingDots}>
+      {[dot1, dot2, dot3].map((dot, index) => (
+        <Animated.View
+          key={index}
+          style={[
+            styles.thinkingDot,
+            {
+              opacity: dot,
+            },
+          ]}
+        />
+      ))}
+    </View>
+  );
+}
 
 export default function AIChat() {
   const insets = useSafeAreaInsets();
@@ -187,7 +244,8 @@ export default function AIChat() {
       {isLoading && (
         <View style={styles.loadingWrapper}>
           <ActivityIndicator size="small" color={colors.primary} />
-          <Text style={styles.loadingText}>A pensar...</Text>
+          <Text style={styles.loadingText}>A pensar</Text>
+          <ThinkingDots />
         </View>
       )}
 
@@ -251,8 +309,10 @@ const styles = StyleSheet.create({
   userText: { color: '#fff' },
   aiText: { color: colors.ink },
 
-  loadingWrapper: { flexDirection: 'row', justifyContent: 'center', padding: 12 },
+  loadingWrapper: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', padding: 12 },
   loadingText: { marginLeft: 8, color: colors.muted },
+  thinkingDots: { flexDirection: 'row', marginLeft: 6, alignItems: 'center' },
+  thinkingDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: colors.muted, marginHorizontal: 2 },
 
   composer: {
     width: '100%',
