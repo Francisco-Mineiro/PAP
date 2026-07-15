@@ -11,7 +11,8 @@ export default function EntryScreen() {
   const [checkingSession, setCheckingSession] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-   /* Verificar sessão*/
+
+   {/* Verificar e Redirecionar*/}
    
   useEffect(() => {
     const checkAuth = async () => {
@@ -26,13 +27,12 @@ export default function EntryScreen() {
     };
     checkAuth();
   }, []);
-  
-  /* Verificar sessão (fim)*/
 
-  {/* Redirecionar*/}
   if (isLoggedIn) {
     return <Redirect href="/barra/Home" replace />;
-  }
+  } 
+
+   {/* Verificar e Redirecionar(Fim)*/}
 
   if (checkingSession) {
     return (
@@ -42,7 +42,7 @@ export default function EntryScreen() {
       </View>
     );
   }
-  /* Redirecionar(Fim)*/
+ 
  
  
   return (
