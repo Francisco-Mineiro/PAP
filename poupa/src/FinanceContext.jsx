@@ -30,7 +30,7 @@ const todayPt = () => new Date().toLocaleDateString('pt-PT');
 
 const formatMoney = (value) => `${value.toFixed(2).replace('.', ',')}€`;
 
-  /* Carregar dados da Conta */
+
 export function FinanceProvider({ children }) {
   const [expenses, setExpenses] = useState([]);
   const [budgets, setBudgets] = useState([]);
@@ -71,7 +71,6 @@ export function FinanceProvider({ children }) {
   useEffect(() => {
     refreshFinanceData();
   }, [refreshFinanceData]);
-  /* Carregar dados da Conta (fim)*/
 
 
   useEffect(() => {
