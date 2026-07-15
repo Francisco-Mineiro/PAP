@@ -123,7 +123,6 @@ export function FinanceProvider({ children }) {
       };
     }
     
-  /* Adcioonar Despesa (fim)*/
 
     const meta = categoryMeta[normalizedCategory] || categoryMeta.Outros;
     const previousSpent = expenses
@@ -147,6 +146,7 @@ export function FinanceProvider({ children }) {
       ...current,
     ]);
 
+  /* Adcioonar Despesa (fim)*/
     return {
       alert: crossedAlert
         ? {
