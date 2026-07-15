@@ -159,6 +159,7 @@ export function FinanceProvider({ children }) {
   };
 
 //Adcioonar Orçamento
+
   const addBudget = ({ title, total, alertPercent = 80 }) => {
     const normalizedTitle = normalizeCategory(title);
     const amount = parseMoney(total);

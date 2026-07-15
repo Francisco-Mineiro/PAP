@@ -15,6 +15,7 @@ const gemini = new OpenAI({
 });
 
 //Resposata AI
+
 app.post("/ai", async (req, res) => {
   const userMessage = req.body.message?.trim();
 
@@ -50,6 +51,7 @@ app.post("/ai", async (req, res) => {
     }
   }
 });
+
 //Resposta AI(Fim)
 
     const aiReply = response.choices[0]?.message?.content?.trim() || "Desculpa, não consegui processar a resposta.";

@@ -83,7 +83,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="barra/notificacoes" options={{ href: null }} />
 
       </Tabs>
-      //Explica barra de navegação(fim)
+      {/* Explica barra de navegação(fim) */}
     </FinanceProvider>
   );
 } 

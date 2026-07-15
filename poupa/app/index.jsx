@@ -12,6 +12,7 @@ export default function EntryScreen() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   //Verificar sessão
+
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -23,13 +24,13 @@ export default function EntryScreen() {
         setCheckingSession(false);
       }
     };
-
     checkAuth();
   }, []);
   
   //Verificar sessão (fim)
 
   //Redirecionar
+  
   if (isLoggedIn) {
     return <Redirect href="/barra/Home" replace />;
   }
